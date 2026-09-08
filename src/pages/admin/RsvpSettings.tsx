@@ -86,7 +86,10 @@ export default function RsvpSettings() {
     setErrors({});
     setIsSaving(true);
     try {
+      // Merge into the full row: an upsert's INSERT candidate is NOT NULL-checked
+      // before ON CONFLICT resolves, so a partial payload trips celebrant_name.
       const saved = await saveEventSettings({
+        ...event,
         rsvp_method: parsed.data.rsvp_method,
         rsvp_url: parsed.data.rsvp_url,
         rsvp_deadline: parsed.data.rsvp_deadline,
