@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-ink font-body text-mist antialiased;
+    overflow-x: hidden;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display font-normal;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-champagne ring-offset-2 ring-offset-ink;
+  }
+
+  ::selection {
+    @apply bg-champagne text-ink;
+  }
+
+  img {
+    @apply max-w-full;
+  }
+}
+
+@layer components {
+  .shell {
+    @apply mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-10;
+  }
+
+  .rule {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-ink-line to-transparent;
+  }
+
+  .eyebrow {
+    @apply font-body text-sm font-medium tracking-wide text-champagne;
+  }
+
+  .body-copy {
+    @apply max-w-prose text-base leading-relaxed text-muted sm:text-lg;
+  }
+
+  .card {
+    @apply rounded-2xl border border-ink-line/70 bg-ink-soft/70 p-6 backdrop-blur-sm;
+  }
+
+  .field-input {
+    @apply w-full rounded-xl border border-ink-line bg-ink px-4 py-3 text-base text-mist
+      placeholder:text-muted/50 transition-colors duration-200
+      focus:border-champagne/60 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+}
+
+@layer utilities {
+  .reveal {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+    transition:
+      opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal[data-visible='true'] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .arch {
+    border-radius: 50% 50% 1.5rem 1.5rem / 32% 32% 2% 2%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
