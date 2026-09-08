@@ -106,7 +106,7 @@ export const heroSettingsSchema = z.object({
   primary_cta_text: z.string().trim().min(1, 'Enter button text.').max(30),
   secondary_cta_text: z.string().trim().min(1, 'Enter button text.').max(30),
   show_countdown: z.boolean(),
-  theme: z.enum(['midnight', 'rosewood', 'forest', 'noir', 'ocean']),
+  theme: z.enum(['midnight', 'rosewood', 'forest', 'noir', 'ocean', 'daylight']),
 });
 
 export type HeroSettingsInput = z.input<typeof heroSettingsSchema>;

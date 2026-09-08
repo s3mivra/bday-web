@@ -9,6 +9,7 @@ export const THEMES = [
   { id: 'forest', label: 'Forest', swatch: '#0D1814', accent: '#D6C48C' },
   { id: 'noir', label: 'Noir', swatch: '#121214', accent: '#E0C896' },
   { id: 'ocean', label: 'Ocean', swatch: '#0C1420', accent: '#96BEC8' },
+  { id: 'daylight', label: 'Daylight (light)', swatch: '#FAF9F6', accent: '#A67A2D' },
 ] as const;
 
 export type ThemeId = (typeof THEMES)[number]['id'];

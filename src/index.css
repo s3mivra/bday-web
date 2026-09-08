@@ -10,6 +10,7 @@
     --c-ink-soft: 31 23 48;
     --c-ink-veil: 44 33 64;
     --c-ink-line: 58 44 82;
+    --c-ink-contrast: 18 13 12;
     --c-accent: 228 194 133;
     --c-accent-deep: 198 156 87;
     --c-accent-faint: 106 83 48;
@@ -24,6 +25,7 @@
     --c-ink-soft: 45 22 30;
     --c-ink-veil: 62 32 42;
     --c-ink-line: 84 44 56;
+    --c-ink-contrast: 18 13 12;
     --c-accent: 233 168 150;
     --c-accent-deep: 201 129 111;
     --c-accent-faint: 112 66 56;
@@ -38,6 +40,7 @@
     --c-ink-soft: 20 34 28;
     --c-ink-veil: 30 48 40;
     --c-ink-line: 44 68 56;
+    --c-ink-contrast: 12 18 14;
     --c-accent: 214 196 140;
     --c-accent-deep: 176 158 108;
     --c-accent-faint: 70 84 56;
@@ -52,6 +55,7 @@
     --c-ink-soft: 28 28 31;
     --c-ink-veil: 40 40 45;
     --c-ink-line: 58 58 66;
+    --c-ink-contrast: 14 14 16;
     --c-accent: 224 200 150;
     --c-accent-deep: 190 166 116;
     --c-accent-faint: 92 84 60;
@@ -66,12 +70,28 @@
     --c-ink-soft: 18 30 46;
     --c-ink-veil: 28 44 64;
     --c-ink-line: 40 62 88;
+    --c-ink-contrast: 10 15 22;
     --c-accent: 224 198 140;
     --c-accent-deep: 150 190 200;
     --c-accent-faint: 58 84 100;
     --c-blush: 168 206 220;
     --c-mist: 238 244 248;
     --c-muted: 158 178 200;
+  }
+
+  [data-theme='daylight'] {
+    color-scheme: light;
+    --c-ink: 250 249 246;
+    --c-ink-soft: 255 255 255;
+    --c-ink-veil: 241 237 231;
+    --c-ink-line: 222 215 204;
+    --c-ink-contrast: 40 32 27;
+    --c-accent: 166 122 45;
+    --c-accent-deep: 138 100 36;
+    --c-accent-faint: 226 214 188;
+    --c-blush: 190 104 112;
+    --c-mist: 43 34 30;
+    --c-muted: 108 98 90;
   }
 
   html {
@@ -100,7 +120,7 @@
   }
 
   ::selection {
-    @apply bg-champagne text-ink;
+    @apply bg-champagne text-ink-contrast;
   }
 
   img {

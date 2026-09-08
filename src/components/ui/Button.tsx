@@ -12,7 +12,7 @@ const BASE =
   'disabled:pointer-events-none disabled:opacity-50 active:translate-y-px';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-champagne text-ink hover:bg-mist',
+  primary: 'bg-champagne text-ink-contrast hover:bg-champagne-deep',
   outline: 'border border-champagne/45 text-champagne hover:border-champagne hover:bg-champagne/10',
   ghost: 'text-muted hover:text-mist',
   danger: 'border border-rose-400/50 text-rose-200 hover:bg-rose-500/15',

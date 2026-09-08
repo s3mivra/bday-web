@@ -10,6 +10,7 @@ export default {
           soft: 'rgb(var(--c-ink-soft) / <alpha-value>)',
           veil: 'rgb(var(--c-ink-veil) / <alpha-value>)',
           line: 'rgb(var(--c-ink-line) / <alpha-value>)',
+          contrast: 'rgb(var(--c-ink-contrast) / <alpha-value>)',
         },
         champagne: {
           DEFAULT: 'rgb(var(--c-accent) / <alpha-value>)',

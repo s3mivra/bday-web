@@ -64,12 +64,15 @@ create table if not exists public.hero_settings (
   primary_cta_text    text    not null default 'View invitation' check (length(primary_cta_text) <= 30),
   secondary_cta_text  text    not null default 'RSVP now' check (length(secondary_cta_text) <= 30),
   show_countdown      boolean not null default true,
-  theme               text    not null default 'midnight' check (theme in ('midnight', 'rosewood', 'forest', 'noir', 'ocean')),
+  theme               text    not null default 'midnight' check (theme in ('midnight', 'rosewood', 'forest', 'noir', 'ocean', 'daylight')),
   updated_at          timestamptz not null default now()
 );
 
 -- Bring existing projects up to date (no-op on a fresh database).
 alter table public.hero_settings add column if not exists theme text not null default 'midnight';
+alter table public.hero_settings drop constraint if exists hero_settings_theme_check;
+alter table public.hero_settings add constraint hero_settings_theme_check
+  check (theme in ('midnight', 'rosewood', 'forest', 'noir', 'ocean', 'daylight'));
 
 create table if not exists public.about_settings (
   id                integer primary key default 1 check (id = 1),
