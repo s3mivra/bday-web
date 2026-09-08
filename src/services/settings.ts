@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { DEFAULT_THEME } from '@/lib/themes';
 import type { AboutSettings, EventSettings, HeroSettings, SiteContent } from '@/types';
 
 /**
@@ -18,6 +19,7 @@ export const DEFAULT_HERO: Omit<HeroSettings, 'updated_at'> = {
   primary_cta_text: 'View invitation',
   secondary_cta_text: 'RSVP now',
   show_countdown: true,
+  theme: DEFAULT_THEME,
 };
 
 export const DEFAULT_ABOUT: Omit<AboutSettings, 'updated_at'> = {

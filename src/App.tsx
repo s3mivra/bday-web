@@ -1,4 +1,4 @@
-import { Suspense, lazy, type ReactNode } from 'react';
+import { Suspense, lazy, useEffect, type ReactNode } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { SiteLayout } from '@/components/layout/SiteLayout';
 import { SectionSkeleton } from '@/components/ui/Skeleton';
@@ -7,6 +7,7 @@ import { AuthProvider } from '@/hooks/useAuth';
 import { SiteContentProvider, useSiteContent } from '@/hooks/useSiteContent';
 import { ToastProvider } from '@/hooks/useToast';
 import { isSupabaseConfigured } from '@/lib/supabase';
+import { applyTheme } from '@/lib/themes';
 
 const Home = lazy(() => import('@/pages/Home'));
 const AboutPage = lazy(() => import('@/pages/AboutPage'));
@@ -29,6 +30,15 @@ function PublicGate({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+/** Keeps <html data-theme> in sync with the saved hero theme. */
+function ThemeSync() {
+  const { hero } = useSiteContent();
+  useEffect(() => {
+    applyTheme(hero?.theme);
+  }, [hero?.theme]);
+  return null;
+}
+
 function PublicRoutes() {
   return (
     <PublicGate>
@@ -44,6 +54,7 @@ export default function App() {
     <ToastProvider>
       <AuthProvider>
         <SiteContentProvider>
+          <ThemeSync />
           <Suspense fallback={<SectionSkeleton />}>
             <Routes>
               <Route element={<SiteLayout />}>

@@ -10,6 +10,7 @@ Every piece of event content lives in Supabase, so turning this into a different
 
 | Concern | Choice |
 | --- | --- |
+
 | Framework | React 18, TypeScript (strict, project references), Vite 5 |
 | Styling | Tailwind CSS 3 with a project token layer |
 | Data / auth / files | Supabase Postgres, Supabase Auth, Supabase Storage |
@@ -178,5 +179,6 @@ supabase/
 ├── schema.sql        tables, RLS, storage bucket
 └── seed.sql          optional placeholder content
 ```
-#   r s v p - 0 0 0 1  
+#   r s v p - 0 0 0 1 
+ 
  

@@ -4,20 +4,21 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Channels are defined in src/index.css and swapped per [data-theme].
         ink: {
-          DEFAULT: '#150F1E',
-          soft: '#1F1730',
-          veil: '#2C2140',
-          line: '#3A2C52',
+          DEFAULT: 'rgb(var(--c-ink) / <alpha-value>)',
+          soft: 'rgb(var(--c-ink-soft) / <alpha-value>)',
+          veil: 'rgb(var(--c-ink-veil) / <alpha-value>)',
+          line: 'rgb(var(--c-ink-line) / <alpha-value>)',
         },
         champagne: {
-          DEFAULT: '#E4C285',
-          deep: '#C69C57',
-          faint: '#6A5330',
+          DEFAULT: 'rgb(var(--c-accent) / <alpha-value>)',
+          deep: 'rgb(var(--c-accent-deep) / <alpha-value>)',
+          faint: 'rgb(var(--c-accent-faint) / <alpha-value>)',
         },
-        blush: '#E3A2A8',
-        mist: '#F6F1EA',
-        muted: '#B3A6C6',
+        blush: 'rgb(var(--c-blush) / <alpha-value>)',
+        mist: 'rgb(var(--c-mist) / <alpha-value>)',
+        muted: 'rgb(var(--c-muted) / <alpha-value>)',
       },
       fontFamily: {
         display: ['Fraunces', 'Georgia', 'serif'],

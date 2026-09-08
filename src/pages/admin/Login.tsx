@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { TextField } from '@/components/ui/Field';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -58,6 +59,13 @@ export default function Login() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-16">
       <div className="w-full max-w-sm">
+        <Link
+          to="/"
+          className="mb-6 inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-champagne"
+        >
+          <ArrowLeft aria-hidden="true" className="h-4 w-4" />
+          Back to site
+        </Link>
         <h1 className="font-display text-3xl text-mist">Invitation admin</h1>
         <p className="mt-2 text-sm text-muted">Sign in to edit the invitation content.</p>
 

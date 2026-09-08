@@ -36,6 +36,7 @@ export type HeroSettings = {
   primary_cta_text: string;
   secondary_cta_text: string;
   show_countdown: boolean;
+  theme: string | null;
   updated_at: string;
 }
 

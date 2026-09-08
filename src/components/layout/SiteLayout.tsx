@@ -19,16 +19,29 @@ function Footer() {
             </p>
           ) : null}
         </div>
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-muted">
-          <Link to="/rsvp" className="transition-colors hover:text-champagne">
-            RSVP
-          </Link>
-          <Link to="/gallery" className="transition-colors hover:text-champagne">
-            Gallery
-          </Link>
-          <Link to="/admin" className="transition-colors hover:text-champagne">
-            Admin
-          </Link>
+        <div className="flex flex-col gap-3 text-sm text-muted sm:items-end">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            <Link to="/rsvp" className="transition-colors hover:text-champagne">
+              RSVP
+            </Link>
+            <Link to="/gallery" className="transition-colors hover:text-champagne">
+              Gallery
+            </Link>
+            <Link to="/admin" className="transition-colors hover:text-champagne">
+              Admin
+            </Link>
+          </div>
+          <p className="text-xs text-muted">
+            Powered by{' '}
+            <a
+              href="https://semivra.asia"
+              target="_blank"
+              rel="noreferrer"
+              className="transition-colors hover:text-champagne"
+            >
+              Semivra Asia
+            </a>
+          </p>
         </div>
       </div>
     </footer>
