@@ -18,6 +18,7 @@ export type EventSettings = {
   rsvp_url: string | null;
   rsvp_method: RsvpMethod;
   rsvp_deadline: string | null;
+  rsvp_note: string | null;
   seo_title: string | null;
   seo_description: string | null;
   og_image_url: string | null;

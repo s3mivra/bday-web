@@ -42,6 +42,7 @@ create table if not exists public.event_settings (
   rsvp_url          text        check (rsvp_url ~* '^https?://'),
   rsvp_method       public.rsvp_method not null default 'google_form',
   rsvp_deadline     date,
+  rsvp_note         text        check (length(rsvp_note) <= 600),
   seo_title         text        check (length(seo_title) <= 70),
   seo_description   text        check (length(seo_description) <= 200),
   og_image_url      text        check (og_image_url ~* '^https?://'),
@@ -49,6 +50,9 @@ create table if not exists public.event_settings (
   updated_at        timestamptz not null default now(),
   constraint event_settings_time_order check (end_time is null or start_time is null or end_time > start_time)
 );
+
+-- Bring existing projects up to date (no-op on a fresh database).
+alter table public.event_settings add column if not exists rsvp_note text;
 
 create table if not exists public.hero_settings (
   id                  integer primary key default 1 check (id = 1),

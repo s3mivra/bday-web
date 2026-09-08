@@ -28,6 +28,12 @@ export default function RsvpPage() {
           {deadline ? <p className="mt-3 text-sm text-champagne">Please reply by {deadline}.</p> : null}
         </div>
 
+        {event.rsvp_note ? (
+          <p className="body-copy mx-auto mt-8 max-w-prose whitespace-pre-line text-center">
+            {event.rsvp_note}
+          </p>
+        ) : null}
+
         <div className="mt-12">
           {event.rsvp_method === 'google_form' ? (
             <RsvpQr url={event.rsvp_url} celebrantName={event.celebrant_name} />

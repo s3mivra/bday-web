@@ -83,6 +83,7 @@ export const rsvpSettingsSchema = z
     rsvp_method: z.enum(['google_form', 'supabase']),
     rsvp_url: httpUrl,
     rsvp_deadline: dateOnly.nullable().or(z.literal('').transform(() => null)),
+    rsvp_note: optionalText(600),
   })
   .superRefine((value, ctx) => {
     if (value.rsvp_method === 'google_form' && !value.rsvp_url) {

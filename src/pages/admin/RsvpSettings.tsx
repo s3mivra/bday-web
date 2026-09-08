@@ -3,7 +3,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { Download } from 'lucide-react';
 import { AdminPage, FormActions } from '@/components/layout/AdminPage';
 import { Button } from '@/components/ui/Button';
-import { RadioGroupField, TextField } from '@/components/ui/Field';
+import { RadioGroupField, TextAreaField, TextField } from '@/components/ui/Field';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorState, InfoPanel } from '@/components/ui/States';
 import { useSiteContent } from '@/hooks/useSiteContent';
@@ -19,6 +19,7 @@ interface FormState {
   rsvp_method: RsvpMethod;
   rsvp_url: string;
   rsvp_deadline: string;
+  rsvp_note: string;
 }
 
 function downloadCsv(rows: Rsvp[], celebrantName: string) {
@@ -40,6 +41,7 @@ export default function RsvpSettings() {
       rsvp_method: event?.rsvp_method ?? 'google_form',
       rsvp_url: event?.rsvp_url ?? '',
       rsvp_deadline: event?.rsvp_deadline ?? '',
+      rsvp_note: event?.rsvp_note ?? '',
     }),
     [event],
   );
@@ -88,6 +90,7 @@ export default function RsvpSettings() {
         rsvp_method: parsed.data.rsvp_method,
         rsvp_url: parsed.data.rsvp_url,
         rsvp_deadline: parsed.data.rsvp_deadline,
+        rsvp_note: parsed.data.rsvp_note,
       });
       applyEvent(saved);
       notify('RSVP settings saved.', 'success');
@@ -154,6 +157,16 @@ export default function RsvpSettings() {
             hint="Optional. Shown to guests as a reply-by date."
             value={values.rsvp_deadline}
             onChange={(e) => setValues((current) => ({ ...current, rsvp_deadline: e.target.value }))}
+          />
+
+          <TextAreaField
+            label="RSVP note"
+            hint="Optional. A short paragraph shown on the RSVP page above the QR code — e.g. dress code, dinner details, who to contact."
+            rows={3}
+            maxLength={600}
+            value={values.rsvp_note}
+            error={errors['rsvp_note']}
+            onChange={(e) => setValues((current) => ({ ...current, rsvp_note: e.target.value }))}
           />
         </section>
 
