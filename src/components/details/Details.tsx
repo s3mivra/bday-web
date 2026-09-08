@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { CalendarDays, Clock, MapPin, Shirt } from 'lucide-react';
 import { ExternalButtonLink } from '@/components/ui/Button';
 import { useReveal } from '@/hooks/useReveal';
-import { formatLongDate, formatTimeRange, mapsUrlFor } from '@/lib/utils';
+import { formatLongDate, formatTimeRange, mapsEmbedUrlFor, mapsUrlFor } from '@/lib/utils';
 import type { EventSettings } from '@/types';
 
 interface DetailCardProps {
@@ -26,6 +26,7 @@ function DetailCard({ icon, term, children }: DetailCardProps) {
 export function Details({ event }: { event: EventSettings }) {
   const ref = useReveal<HTMLDivElement>();
   const mapsUrl = mapsUrlFor(event);
+  const mapEmbed = mapsEmbedUrlFor(event);
 
   return (
     <section aria-labelledby="details-heading" className="py-20 sm:py-28">
@@ -58,11 +59,24 @@ export function Details({ event }: { event: EventSettings }) {
           </div>
         ) : null}
 
+        {mapEmbed ? (
+          <div className="mt-10 overflow-hidden rounded-2xl border border-ink-line/70">
+            <iframe
+              title={`Map showing ${event.venue}`}
+              src={mapEmbed}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+              className="block h-72 w-full border-0 sm:h-80"
+            />
+          </div>
+        ) : null}
+
         {mapsUrl ? (
-          <div className="mt-10">
+          <div className="mt-6">
             <ExternalButtonLink href={mapsUrl} variant="outline" size="lg">
               <MapPin aria-hidden="true" className="h-4 w-4" />
-              View location on Google Maps
+              Open in Google Maps
             </ExternalButtonLink>
           </div>
         ) : null}

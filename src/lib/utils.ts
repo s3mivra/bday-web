@@ -107,6 +107,16 @@ export function mapsUrlFor(event: { google_maps_url: string | null; venue: strin
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
 }
 
+/**
+ * Keyless Google Maps embed URL built from the venue and address. `output=embed`
+ * needs no API key and drops a pin on the geocoded query.
+ */
+export function mapsEmbedUrlFor(event: { venue: string; address: string }): string | null {
+  const query = [event.venue, event.address].filter(Boolean).join(', ').trim();
+  if (!query) return null;
+  return `https://www.google.com/maps?q=${encodeURIComponent(query)}&z=15&output=embed`;
+}
+
 export function slugify(value: string): string {
   return value
     .toLowerCase()
