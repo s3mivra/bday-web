@@ -40,6 +40,42 @@ export type HeroSettings = {
   updated_at: string;
 }
 
+export type InvitationSettings = {
+  id: number;
+  envelope_enabled: boolean;
+  envelope_heading: string | null;
+  hero_tagline: string | null;
+  song_title: string | null;
+  song_subtitle: string | null;
+  song_url: string | null;
+  song_path: string | null;
+  countdown_title: string | null;
+  countdown_text: string | null;
+  countdown_image_url: string | null;
+  countdown_image_path: string | null;
+  banner_text: string | null;
+  ceremony_title: string | null;
+  ceremony_time: string | null;
+  ceremony_venue: string | null;
+  ceremony_address: string | null;
+  ceremony_maps_url: string | null;
+  reception_title: string | null;
+  fun_title: string | null;
+  fun_text: string | null;
+  ninong: string | null;
+  ninang: string | null;
+  gift_guide: string | null;
+  reminders: string | null;
+  photo_image_url: string | null;
+  photo_image_path: string | null;
+  save_date_text: string | null;
+  closing_letter: string | null;
+  closing_signature: string | null;
+  closing_image_url: string | null;
+  closing_image_path: string | null;
+  updated_at: string;
+}
+
 export type AboutSettings = {
   id: number;
   title: string;
@@ -79,6 +115,7 @@ export interface SiteContent {
   event: EventSettings | null;
   hero: HeroSettings | null;
   about: AboutSettings | null;
+  invitation: InvitationSettings | null;
 }
 
 export interface Database {
@@ -94,6 +131,12 @@ export interface Database {
         Row: HeroSettings;
         Insert: Partial<HeroSettings> & { id?: number };
         Update: Partial<HeroSettings>;
+        Relationships: [];
+      };
+      invitation_settings: {
+        Row: InvitationSettings;
+        Insert: Partial<InvitationSettings> & { id?: number };
+        Update: Partial<InvitationSettings>;
         Relationships: [];
       };
       about_settings: {

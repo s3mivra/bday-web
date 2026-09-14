@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { isSupabaseConfigured, toErrorMessage } from '@/lib/supabase';
 import { fetchSiteContent } from '@/services/settings';
-import type { AboutSettings, EventSettings, HeroSettings, SiteContent } from '@/types';
+import type { AboutSettings, EventSettings, HeroSettings, InvitationSettings, SiteContent } from '@/types';
 
 interface SiteContentValue extends SiteContent {
   isLoading: boolean;
@@ -12,6 +12,7 @@ interface SiteContentValue extends SiteContent {
   applyEvent: (event: EventSettings) => void;
   applyHero: (hero: HeroSettings) => void;
   applyAbout: (about: AboutSettings) => void;
+  applyInvitation: (invitation: InvitationSettings) => void;
 }
 
 const SiteContentContext = createContext<SiteContentValue | null>(null);
@@ -23,7 +24,12 @@ const SiteContentContext = createContext<SiteContentValue | null>(null);
  * after a save without a refetch.
  */
 export function SiteContentProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<SiteContent>({ event: null, hero: null, about: null });
+  const [content, setContent] = useState<SiteContent>({
+    event: null,
+    hero: null,
+    about: null,
+    invitation: null,
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -58,6 +64,7 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
       applyEvent: (event) => setContent((current) => ({ ...current, event })),
       applyHero: (hero) => setContent((current) => ({ ...current, hero })),
       applyAbout: (about) => setContent((current) => ({ ...current, about })),
+      applyInvitation: (invitation) => setContent((current) => ({ ...current, invitation })),
     }),
     [content, isLoading, error, refresh],
   );

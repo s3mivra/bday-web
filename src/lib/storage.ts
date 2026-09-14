@@ -5,6 +5,12 @@ export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'] as const;
 export const ACCEPT_ATTRIBUTE = ACCEPTED_IMAGE_TYPES.join(',');
 
+export const MAX_AUDIO_BYTES = 15 * 1024 * 1024;
+export const ACCEPTED_AUDIO_TYPES = ['audio/mpeg', 'audio/mp4', 'audio/x-m4a'] as const;
+export const AUDIO_ACCEPT_ATTRIBUTE = [...ACCEPTED_AUDIO_TYPES, '.mp3', '.m4a'].join(',');
+
+export type MediaFolder = 'gallery' | 'hero' | 'about' | 'invitation' | 'music';
+
 export interface UploadedFile {
   path: string;
   url: string;
@@ -45,7 +51,7 @@ function extensionFor(file: File): string {
   return file.type.split('/')[1] ?? 'jpg';
 }
 
-export async function uploadImage(file: File, folder: 'gallery' | 'hero' | 'about'): Promise<UploadedFile> {
+export async function uploadImage(file: File, folder: Exclude<MediaFolder, 'music'>): Promise<UploadedFile> {
   const invalid = validateImageFile(file);
   if (invalid) throw new Error(invalid);
 
@@ -63,6 +69,34 @@ export async function uploadImage(file: File, folder: 'gallery' | 'hero' | 'abou
 
   const { data } = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path);
   return { path, url: data.publicUrl, width: dimensions.width, height: dimensions.height };
+}
+
+export function validateAudioFile(file: File): string | null {
+  if (!(ACCEPTED_AUDIO_TYPES as readonly string[]).includes(file.type)) {
+    return `${file.name} is not a supported song file. Use MP3 or M4A.`;
+  }
+  if (file.size > MAX_AUDIO_BYTES) {
+    return `${file.name} is larger than 15 MB. Use a shorter or lower bitrate version.`;
+  }
+  return null;
+}
+
+export async function uploadAudio(file: File): Promise<UploadedFile> {
+  const invalid = validateAudioFile(file);
+  if (invalid) throw new Error(invalid);
+
+  const base = slugify(file.name.replace(/\.[^.]+$/, '')) || 'song';
+  const path = `music/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${base}.${extensionFor(file)}`;
+
+  const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(path, file, {
+    cacheControl: '31536000',
+    contentType: file.type,
+    upsert: false,
+  });
+  if (error) throw error;
+
+  const { data } = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path);
+  return { path, url: data.publicUrl, width: null, height: null };
 }
 
 /** Storage failures here are non-fatal: the DB row is the source of truth. */

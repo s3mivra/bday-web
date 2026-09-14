@@ -106,7 +106,7 @@ export const heroSettingsSchema = z.object({
   primary_cta_text: z.string().trim().min(1, 'Enter button text.').max(30),
   secondary_cta_text: z.string().trim().min(1, 'Enter button text.').max(30),
   show_countdown: z.boolean(),
-  theme: z.enum(['midnight', 'rosewood', 'forest', 'noir', 'ocean', 'daylight']),
+  theme: z.enum(['midnight', 'rosewood', 'forest', 'noir', 'ocean', 'daylight', 'starlight']),
 });
 
 export type HeroSettingsInput = z.input<typeof heroSettingsSchema>;
@@ -120,6 +120,38 @@ export const aboutSettingsSchema = z.object({
 });
 
 export type AboutSettingsInput = z.input<typeof aboutSettingsSchema>;
+
+export const invitationSettingsSchema = z.object({
+  envelope_enabled: z.boolean(),
+  envelope_heading: optionalText(60),
+  hero_tagline: optionalText(120),
+  song_title: optionalText(80),
+  song_subtitle: optionalText(120),
+  song_url: httpUrl,
+  countdown_title: optionalText(160),
+  countdown_text: optionalText(300),
+  countdown_image_url: httpUrl,
+  banner_text: optionalText(120),
+  ceremony_title: optionalText(40),
+  ceremony_time: timeOnly,
+  ceremony_venue: optionalText(120),
+  ceremony_address: optionalText(200),
+  ceremony_maps_url: httpUrl,
+  reception_title: optionalText(40),
+  fun_title: optionalText(60),
+  fun_text: optionalText(400),
+  ninong: optionalText(2000),
+  ninang: optionalText(2000),
+  gift_guide: optionalText(400),
+  reminders: optionalText(1000),
+  photo_image_url: httpUrl,
+  save_date_text: optionalText(80),
+  closing_letter: optionalText(800),
+  closing_signature: optionalText(60),
+  closing_image_url: httpUrl,
+});
+
+export type InvitationSettingsInput = z.input<typeof invitationSettingsSchema>;
 
 export const rsvpSchema = z
   .object({

@@ -64,7 +64,7 @@ create table if not exists public.hero_settings (
   primary_cta_text    text    not null default 'View invitation' check (length(primary_cta_text) <= 30),
   secondary_cta_text  text    not null default 'RSVP now' check (length(secondary_cta_text) <= 30),
   show_countdown      boolean not null default true,
-  theme               text    not null default 'midnight' check (theme in ('midnight', 'rosewood', 'forest', 'noir', 'ocean', 'daylight')),
+  theme               text    not null default 'midnight' check (theme in ('midnight', 'rosewood', 'forest', 'noir', 'ocean', 'daylight', 'starlight')),
   updated_at          timestamptz not null default now()
 );
 
@@ -72,7 +72,46 @@ create table if not exists public.hero_settings (
 alter table public.hero_settings add column if not exists theme text not null default 'midnight';
 alter table public.hero_settings drop constraint if exists hero_settings_theme_check;
 alter table public.hero_settings add constraint hero_settings_theme_check
-  check (theme in ('midnight', 'rosewood', 'forest', 'noir', 'ocean', 'daylight'));
+  check (theme in ('midnight', 'rosewood', 'forest', 'noir', 'ocean', 'daylight', 'starlight'));
+
+-- Extra sections used by the Starlight theme (envelope intro, music, ceremony,
+-- godparents, reminders, save the date, closing letter). Reception details stay
+-- on event_settings, so the other themes keep working unchanged.
+create table if not exists public.invitation_settings (
+  id                    integer primary key default 1 check (id = 1),
+  envelope_enabled      boolean not null default true,
+  envelope_heading      text check (length(envelope_heading) <= 60),
+  hero_tagline          text check (length(hero_tagline) <= 120),
+  song_title            text check (length(song_title) <= 80),
+  song_subtitle         text check (length(song_subtitle) <= 120),
+  song_url              text check (song_url ~* '^https?://'),
+  song_path             text,
+  countdown_title       text check (length(countdown_title) <= 160),
+  countdown_text        text check (length(countdown_text) <= 300),
+  countdown_image_url   text check (countdown_image_url ~* '^https?://'),
+  countdown_image_path  text,
+  banner_text           text check (length(banner_text) <= 120),
+  ceremony_title        text check (length(ceremony_title) <= 40),
+  ceremony_time         time,
+  ceremony_venue        text check (length(ceremony_venue) <= 120),
+  ceremony_address      text check (length(ceremony_address) <= 200),
+  ceremony_maps_url     text check (ceremony_maps_url ~* '^https?://'),
+  reception_title       text check (length(reception_title) <= 40),
+  fun_title             text check (length(fun_title) <= 60),
+  fun_text              text check (length(fun_text) <= 400),
+  ninong                text check (length(ninong) <= 2000),
+  ninang                text check (length(ninang) <= 2000),
+  gift_guide            text check (length(gift_guide) <= 400),
+  reminders             text check (length(reminders) <= 1000),
+  photo_image_url       text check (photo_image_url ~* '^https?://'),
+  photo_image_path      text,
+  save_date_text        text check (length(save_date_text) <= 80),
+  closing_letter        text check (length(closing_letter) <= 800),
+  closing_signature     text check (length(closing_signature) <= 60),
+  closing_image_url     text check (closing_image_url ~* '^https?://'),
+  closing_image_path    text,
+  updated_at            timestamptz not null default now()
+);
 
 create table if not exists public.about_settings (
   id                integer primary key default 1 check (id = 1),
@@ -136,6 +175,10 @@ drop trigger if exists hero_settings_touch on public.hero_settings;
 create trigger hero_settings_touch before update on public.hero_settings
   for each row execute function public.touch_updated_at();
 
+drop trigger if exists invitation_settings_touch on public.invitation_settings;
+create trigger invitation_settings_touch before update on public.invitation_settings
+  for each row execute function public.touch_updated_at();
+
 drop trigger if exists about_settings_touch on public.about_settings;
 create trigger about_settings_touch before update on public.about_settings
   for each row execute function public.touch_updated_at();
@@ -151,6 +194,7 @@ create trigger about_settings_touch before update on public.about_settings
 alter table public.event_settings enable row level security;
 alter table public.hero_settings  enable row level security;
 alter table public.about_settings enable row level security;
+alter table public.invitation_settings enable row level security;
 alter table public.gallery        enable row level security;
 alter table public.rsvps          enable row level security;
 
@@ -158,7 +202,7 @@ do $$
 declare
   t text;
 begin
-  foreach t in array array['event_settings', 'hero_settings', 'about_settings'] loop
+  foreach t in array array['event_settings', 'hero_settings', 'about_settings', 'invitation_settings'] loop
     execute format('drop policy if exists %I on public.%I', t || '_public_read', t);
     execute format('drop policy if exists %I on public.%I', t || '_admin_write', t);
 
@@ -221,8 +265,8 @@ values (
   'invitation-media',
   'invitation-media',
   true,
-  5242880,
-  array['image/jpeg', 'image/png', 'image/webp', 'image/avif']
+  15728640,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'audio/mpeg', 'audio/mp4', 'audio/x-m4a']
 )
 on conflict (id) do update
   set public             = excluded.public,

@@ -6,6 +6,7 @@ import {
   Images,
   LayoutDashboard,
   LogOut,
+  Mail,
   Menu,
   Send,
   Sparkles,
@@ -30,12 +31,14 @@ const HeroEditor = lazy(() => import('@/pages/admin/HeroEditor'));
 const AboutEditor = lazy(() => import('@/pages/admin/AboutEditor'));
 const GalleryManager = lazy(() => import('@/pages/admin/GalleryManager'));
 const RsvpSettings = lazy(() => import('@/pages/admin/RsvpSettings'));
+const InvitationEditor = lazy(() => import('@/pages/admin/InvitationEditor'));
 
 const NAV = [
   { to: '/admin', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/admin/event', label: 'Event details', icon: CalendarCog, end: false },
   { to: '/admin/hero', label: 'Hero', icon: Sparkles, end: false },
   { to: '/admin/about', label: 'About', icon: UserRound, end: false },
+  { to: '/admin/invitation', label: 'Invitation sections', icon: Mail, end: false },
   { to: '/admin/gallery', label: 'Gallery', icon: Images, end: false },
   { to: '/admin/rsvp', label: 'RSVP', icon: Send, end: false },
 ] as const;
@@ -203,6 +206,7 @@ export default function AdminApp() {
           <Route path="event" element={<EventEditor />} />
           <Route path="hero" element={<HeroEditor />} />
           <Route path="about" element={<AboutEditor />} />
+          <Route path="invitation" element={<InvitationEditor />} />
           <Route path="gallery" element={<GalleryManager />} />
           <Route path="rsvp" element={<RsvpSettings />} />
         </Route>

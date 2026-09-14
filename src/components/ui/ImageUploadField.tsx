@@ -13,7 +13,7 @@ export interface ImageValue {
 interface ImageUploadFieldProps {
   label: string;
   hint?: string;
-  folder: 'hero' | 'about';
+  folder: 'hero' | 'about' | 'invitation';
   value: ImageValue;
   onChange: (value: ImageValue) => void;
   aspect?: string;

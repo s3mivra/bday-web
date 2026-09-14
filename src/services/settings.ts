@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { DEFAULT_THEME } from '@/lib/themes';
-import type { AboutSettings, EventSettings, HeroSettings, SiteContent } from '@/types';
+import type { AboutSettings, EventSettings, HeroSettings, InvitationSettings, SiteContent } from '@/types';
 
 /**
  * Every settings table is a singleton keyed on `id = 1` (enforced by a CHECK
@@ -32,21 +32,68 @@ export const DEFAULT_ABOUT: Omit<AboutSettings, 'updated_at'> = {
   image_path: null,
 };
 
+export const DEFAULT_INVITATION: Omit<InvitationSettings, 'updated_at'> = {
+  id: SETTINGS_ID,
+  envelope_enabled: true,
+  envelope_heading: 'A letter from the stars',
+  hero_tagline: null,
+  song_title: null,
+  song_subtitle: null,
+  song_url: null,
+  song_path: null,
+  countdown_title: 'The countdown to the big day has begun!',
+  countdown_text: null,
+  countdown_image_url: null,
+  countdown_image_path: null,
+  banner_text: 'We can’t wait to celebrate with you!',
+  ceremony_title: 'Ceremony',
+  ceremony_time: null,
+  ceremony_venue: null,
+  ceremony_address: null,
+  ceremony_maps_url: null,
+  reception_title: 'Reception',
+  fun_title: null,
+  fun_text: null,
+  ninong: null,
+  ninang: null,
+  gift_guide: null,
+  reminders: null,
+  photo_image_url: null,
+  photo_image_path: null,
+  save_date_text: null,
+  closing_letter: null,
+  closing_signature: null,
+  closing_image_url: null,
+  closing_image_path: null,
+};
+
+/**
+ * PostgREST reports a table that has not been created yet as PGRST205 (or
+ * 42P01 from Postgres). Projects that have not re-run schema.sql since the
+ * Starlight sections were added should keep rendering, not fail outright.
+ */
+function isMissingTable(error: { code?: string } | null): boolean {
+  return error?.code === 'PGRST205' || error?.code === '42P01';
+}
+
 /** `maybeSingle` so a fresh database returns `null` instead of throwing. */
 export async function fetchSiteContent(): Promise<SiteContent> {
-  const [eventResult, heroResult, aboutResult] = await Promise.all([
+  const [eventResult, heroResult, aboutResult, invitationResult] = await Promise.all([
     supabase.from('event_settings').select('*').eq('id', SETTINGS_ID).maybeSingle(),
     supabase.from('hero_settings').select('*').eq('id', SETTINGS_ID).maybeSingle(),
     supabase.from('about_settings').select('*').eq('id', SETTINGS_ID).maybeSingle(),
+    supabase.from('invitation_settings').select('*').eq('id', SETTINGS_ID).maybeSingle(),
   ]);
 
-  const failure = eventResult.error ?? heroResult.error ?? aboutResult.error;
+  const invitationError = isMissingTable(invitationResult.error) ? null : invitationResult.error;
+  const failure = eventResult.error ?? heroResult.error ?? aboutResult.error ?? invitationError;
   if (failure) throw failure;
 
   return {
     event: eventResult.data as EventSettings | null,
     hero: heroResult.data as HeroSettings | null,
     about: aboutResult.data as AboutSettings | null,
+    invitation: invitationResult.error ? null : (invitationResult.data as InvitationSettings | null),
   };
 }
 
@@ -71,6 +118,24 @@ export async function saveHeroSettings(values: Partial<HeroSettings>): Promise<H
     .single();
   if (error) throw error;
   return data as HeroSettings;
+}
+
+export async function saveInvitationSettings(values: Partial<InvitationSettings>): Promise<InvitationSettings> {
+  const { data, error } = await supabase
+    .from('invitation_settings')
+    .upsert(
+      { ...DEFAULT_INVITATION, ...values, id: SETTINGS_ID, updated_at: new Date().toISOString() },
+      { onConflict: 'id' },
+    )
+    .select()
+    .single();
+  if (error) {
+    if (isMissingTable(error)) {
+      throw new Error('The invitation_settings table is missing. Re-run supabase/schema.sql in the Supabase SQL editor.');
+    }
+    throw error;
+  }
+  return data as InvitationSettings;
 }
 
 export async function saveAboutSettings(values: Partial<AboutSettings>): Promise<AboutSettings> {

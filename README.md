@@ -36,6 +36,7 @@ Create a free project at supabase.com, then open **SQL Editor** and run the whol
 - `event_settings`, `hero_settings`, `about_settings` — singleton rows pinned to `id = 1`
 - `gallery` — one row per photo, with `display_order` and `is_visible`
 - `rsvps` — responses for the built-in RSVP form
+- `invitation_settings` : singleton row for the Starlight theme sections
 - `updated_at` triggers, RLS policies, and the `invitation-media` storage bucket with its object policies
 
 Optionally run `supabase/seed.sql` for placeholder content so the site renders before you have filled anything in.
@@ -85,6 +86,7 @@ pnpm preview
 | `/admin/login` | Sign in |
 | `/admin/event`, `/hero`, `/about`, `/gallery` | Content editors |
 | `/admin/rsvp` | RSVP method, form URL, deadline, QR preview, responses |
+| `/admin/invitation` | Starlight theme sections: envelope, music, ceremony, godparents, reminders, closing letter |
 
 ---
 
@@ -108,6 +110,22 @@ The client-side route guard controls navigation only. Authorization is enforced 
 Compress photos before upload. Around 1600px on the long edge, saved as WebP, gives a sharp gallery at a fraction of the bytes; the bucket rejects anything over 5 MB.
 
 Deleting a photo removes the row first and then the object. If the object delete fails, the orphan is harmless — the table is the source of truth. The inverse case is also handled: if a gallery row insert fails after a successful upload, the upload is rolled back.
+
+---
+
+## Starlight theme (envelope invitation)
+
+Pick **Starlight (envelope)** under **Admin, Hero, Site theme** to turn the home page into a single long invitation:
+
+- A full-screen envelope intro. Guests tap a wax seal, the flap opens and the letter grows into the page. Add `?to=Guest%20Name` to a shared link to address the envelope to that guest.
+- Hero with the celebrant name, Hero headline as the occasion, and the Hero image in a round frame.
+- Date ticket, music player, countdown, ceremony and reception cards with map previews, godparents (ninong and ninang), dress code, gift guide, reminders, RSVP with a QR code for the Google Form, save the date and a closing letter.
+
+Content comes from the existing tables plus `invitation_settings`, edited at **Admin, Invitation sections**. The reception uses the venue, address, start time and Google Maps link from Event details. Empty sections are hidden.
+
+After pulling this change, re-run `supabase/schema.sql` once. It adds the `invitation_settings` table, allows the `starlight` theme value, and lets the `invitation-media` bucket accept MP3 and M4A files (up to 15 MB; images are still limited to 5 MB in the app). Until then the site keeps working and the Starlight sections fall back to defaults.
+
+The theme styles live in `src/components/starlight/starlight.css`, scoped under `.sl`, and its fonts (Playfair Display, Sacramento, Quicksand) load only when the theme is active.
 
 ---
 

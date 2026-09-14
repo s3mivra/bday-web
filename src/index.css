@@ -94,6 +94,21 @@
     --c-muted: 108 98 90;
   }
 
+  [data-theme='starlight'] {
+    color-scheme: dark;
+    --c-ink: 29 27 58;
+    --c-ink-soft: 45 42 90;
+    --c-ink-veil: 60 55 112;
+    --c-ink-line: 78 72 138;
+    --c-ink-contrast: 29 27 58;
+    --c-accent: 242 196 109;
+    --c-accent-deep: 214 166 80;
+    --c-accent-faint: 110 92 60;
+    --c-blush: 246 184 168;
+    --c-mist: 253 251 255;
+    --c-muted: 201 184 240;
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
   }

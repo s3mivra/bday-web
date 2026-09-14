@@ -6,6 +6,7 @@ import { Details } from '@/components/details/Details';
 import { Divider } from '@/components/ui/Divider';
 import { ButtonLink } from '@/components/ui/Button';
 import { GalleryGrid } from '@/components/gallery/GalleryGrid';
+import { StarlightInvitation } from '@/components/starlight/StarlightInvitation';
 import { useReveal } from '@/hooks/useReveal';
 import { useSiteContent } from '@/hooks/useSiteContent';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -16,7 +17,7 @@ function seoTitle(event: EventSettings): string {
 }
 
 export default function Home() {
-  const { event, hero, about } = useSiteContent();
+  const { event, hero, about, invitation } = useSiteContent();
   const rsvpRef = useReveal<HTMLDivElement>();
 
   useDocumentTitle(event ? seoTitle(event) : 'Birthday Invitation', {
@@ -27,6 +28,11 @@ export default function Home() {
   });
 
   if (!event) return null;
+
+  // The Starlight theme is a single long page with its own envelope intro.
+  if (hero?.theme === 'starlight') {
+    return <StarlightInvitation event={event} hero={hero} invitation={invitation} />;
+  }
 
   return (
     <>
