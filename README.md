@@ -123,6 +123,8 @@ Pick **Starlight (envelope)** under **Admin, Hero, Site theme** to turn the home
 
 Content comes from the existing tables plus `invitation_settings`, edited at **Admin, Invitation sections**. The reception uses the venue, address, start time and Google Maps link from Event details. Empty sections are hidden.
 
+Step by step setup, including the admin login, env vars and which field goes where: [docs/STARLIGHT_SETUP.md](docs/STARLIGHT_SETUP.md).
+
 After pulling this change, re-run `supabase/schema.sql` once. It adds the `invitation_settings` table, allows the `starlight` theme value, and lets the `invitation-media` bucket accept MP3 and M4A files (up to 15 MB; images are still limited to 5 MB in the app). Until then the site keeps working and the Starlight sections fall back to defaults.
 
 The theme styles live in `src/components/starlight/starlight.css`, scoped under `.sl`, and its fonts (Playfair Display, Sacramento, Quicksand) load only when the theme is active.
