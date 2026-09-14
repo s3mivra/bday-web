@@ -88,6 +88,9 @@
 .sl-seal .left { clip-path: polygon(0 0, 50% 0, 42% 38%, 56% 58%, 47% 100%, 0 100%); }
 .sl-seal .right { clip-path: polygon(50% 0, 100% 0, 100% 100%, 47% 100%, 56% 58%, 42% 38%); }
 .sl-seal:hover .whole { transform: scale(1.06); }
+/* Replace the site-wide focus ring (navy offset) with a soft gold glow that suits the wax seal. */
+.sl-seal:focus { outline: none; box-shadow: none; --tw-ring-shadow: 0 0 #0000; --tw-ring-offset-shadow: 0 0 #0000; }
+.sl-seal:focus-visible { box-shadow: 0 0 0 3px rgb(242 196 109 / .55); }
 .sl-seal::after { content: ''; position: absolute; inset: -8px; border-radius: 50%; border: 2px solid var(--sl-gold); animation: sl-ping 1.8s ease-out infinite; }
 @keyframes sl-ping { from { transform: scale(.8); opacity: .9; } to { transform: scale(1.5); opacity: 0; } }
 .sl-hint { margin-top: 30px; font-size: 13px; letter-spacing: .2em; text-transform: uppercase; opacity: .8; }

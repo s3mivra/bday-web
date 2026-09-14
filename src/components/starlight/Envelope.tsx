@@ -79,7 +79,6 @@ export function Envelope({ celebrantName, occasion, heading, onOpenStart, onOpen
   const initial = celebrantName.trim().charAt(0).toUpperCase() || '✦';
 
   useEffect(() => {
-    sealRef.current?.focus({ preventScroll: true });
     const { overflow } = document.body.style;
     document.body.style.overflow = 'hidden';
     return () => {
