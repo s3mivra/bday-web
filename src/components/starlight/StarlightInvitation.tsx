@@ -20,6 +20,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { Envelope } from '@/components/starlight/Envelope';
+import { ImageZoom } from '@/components/starlight/ImageZoom';
 import { StarField } from '@/components/starlight/StarField';
 import { BerryDivider, Strawberry } from '@/components/starlight/Strawberry';
 import { useCountdown } from '@/hooks/useCountdown';
@@ -168,10 +169,11 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
   const rsvpUrl = safeExternalUrl(event.rsvp_url);
   const softcopyUrl = safeExternalUrl(inv?.softcopy_image_url);
   const [isSavingCopy, setIsSavingCopy] = useState(false);
+  const [isViewingCopy, setIsViewingCopy] = useState(false);
 
   /**
    * The image lives on the Supabase storage domain, where the download attribute
-   * is ignored, so fetch it as a blob first. Falls back to opening it in a tab
+   * is ignored, so fetch it as a blob first. Falls back to the on-site viewer
    * (long-press to save on phones) if the fetch is blocked.
    */
   async function saveSoftcopy() {
@@ -190,7 +192,9 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
       link.remove();
       window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     } catch {
-      window.open(softcopyUrl, '_blank', 'noopener,noreferrer');
+      // Download blocked (for example in some in-app browsers): show the image
+      // in the viewer so it can be long-pressed and saved.
+      setIsViewingCopy(true);
     } finally {
       setIsSavingCopy(false);
     }
@@ -561,20 +565,35 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
               <p className="sl-kicker sl-muted">softcopy</p>
               <h2 className="sl-section-title">{inv?.softcopy_title ?? 'Your copy of the invitation'}</h2>
               {inv?.softcopy_text ? <p className="sl-muted" style={{ margin: '0 0 18px' }}>{inv.softcopy_text}</p> : null}
-              <a className="sl-paper" href={softcopyUrl} target="_blank" rel="noopener noreferrer">
+              <button
+                type="button"
+                className="sl-paper"
+                onClick={() => setIsViewingCopy(true)}
+                aria-label="View the invitation full size"
+              >
                 <img src={softcopyUrl} alt={`Invitation card for ${name}`} loading="lazy" />
-              </a>
+              </button>
               <div className="sl-softcopy-actions">
-                <a className="sl-btn" href={softcopyUrl} target="_blank" rel="noopener noreferrer">
+                <button type="button" className="sl-btn" onClick={() => setIsViewingCopy(true)}>
                   <Maximize2 aria-hidden="true" className="h-4 w-4" />
                   View full size
-                </a>
+                </button>
                 <button type="button" className="sl-btn sl-btn-light" onClick={() => void saveSoftcopy()} disabled={isSavingCopy}>
                   <Download aria-hidden="true" className="h-4 w-4" />
                   {isSavingCopy ? 'Saving...' : 'Save a copy'}
                 </button>
               </div>
             </Reveal>
+          ) : null}
+
+          {isViewingCopy && softcopyUrl ? (
+            <ImageZoom
+              src={softcopyUrl}
+              alt={`Invitation card for ${name}`}
+              onClose={() => setIsViewingCopy(false)}
+              onSave={() => void saveSoftcopy()}
+              isSaving={isSavingCopy}
+            />
           ) : null}
         </div>
       </div>
