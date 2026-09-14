@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { Cherry } from 'lucide-react';
 import { StarField } from '@/components/starlight/StarField';
+import { Strawberry } from '@/components/starlight/Strawberry';
 
 type Stage = 'idle' | 'opening' | 'flipped' | 'rising' | 'growing' | 'done';
 
@@ -57,6 +57,7 @@ function WaxSeal({ letter, className }: { letter: string; className: string }) {
 
 interface Burst {
   id: number;
+  berry: boolean;
   style: CSSProperties;
 }
 
@@ -98,6 +99,7 @@ export function Envelope({ celebrantName, occasion, heading, onOpenStart, onOpen
           const distance = 80 + Math.random() * 90;
           return {
             id,
+            berry: id % 3 === 0,
             style: {
               left: rect.left + rect.width / 2,
               top: rect.top + rect.height * 0.54,
@@ -146,7 +148,7 @@ export function Envelope({ celebrantName, occasion, heading, onOpenStart, onOpen
             To<b>{guest || 'our dearest guest'}</b>
           </div>
           <div className="sl-stamp" aria-hidden="true">
-            <Cherry className="h-6 w-6" />
+            <Strawberry size={26} />
           </div>
           <button
             ref={sealRef}
@@ -166,7 +168,7 @@ export function Envelope({ celebrantName, occasion, heading, onOpenStart, onOpen
 
       {bursts.map((burst) => (
         <span key={burst.id} className="sl-burst" style={burst.style} aria-hidden="true">
-          {'♥︎'}
+          {burst.berry ? <Strawberry size={20} /> : '♥︎'}
         </span>
       ))}
     </div>

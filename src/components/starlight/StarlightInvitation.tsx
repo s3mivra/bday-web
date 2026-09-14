@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Envelope } from '@/components/starlight/Envelope';
 import { StarField } from '@/components/starlight/StarField';
+import { BerryDivider, Strawberry } from '@/components/starlight/Strawberry';
 import { useCountdown } from '@/hooks/useCountdown';
 import { useReveal } from '@/hooks/useReveal';
 import {
@@ -208,8 +209,13 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
           <p className="sl-hello sl-hand">our sweetest berry</p>
           <h1 className="sl-name sl-display">{name}</h1>
           <p className="sl-occasion">{occasion}</p>
-          <div className="sl-ring">
-            <Photo url={hero?.image_url ?? null} fallback={initial} className="sl-ring-in" />
+          <div className="sl-ring-wrap">
+            <Strawberry size={58} rotate={-24} className="sl-ring-berry left" />
+            <div className="sl-ring">
+              <Photo url={hero?.image_url ?? null} fallback={initial} className="sl-ring-in" />
+            </div>
+            <Strawberry size={46} rotate={20} className="sl-ring-berry right" />
+            <Strawberry size={30} rotate={-8} className="sl-ring-berry bottom" />
           </div>
           {inv?.hero_tagline ?? hero?.subtitle ? (
             <p className="sl-tagline">{inv?.hero_tagline ?? hero?.subtitle}</p>
@@ -302,11 +308,14 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
 
           {inv?.banner_text ? (
             <Reveal as="div" className="sl-bubble sl-banner">
+              <Strawberry size={30} rotate={-15} className="sl-banner-berry left" />
               {inv.banner_text}
+              <Strawberry size={30} rotate={15} className="sl-banner-berry right" />
             </Reveal>
           ) : null}
 
           <Reveal className="sl-bubble">
+            <BerryDivider />
             <p className="sl-kicker sl-muted">{name}</p>
             <h2 className="sl-section-title">
               <em>The</em>Location
@@ -342,6 +351,7 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
 
           {ninong.length || ninang.length ? (
             <Reveal className="sl-bubble">
+              <BerryDivider />
               <p className="sl-kicker sl-muted">with gratitude to our</p>
               <h2 className="sl-section-title">
                 <em>God</em>parents
@@ -372,6 +382,7 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
           ) : null}
 
           <Reveal className="sl-bubble">
+            <BerryDivider />
             <p className="sl-kicker sl-muted">{name}</p>
             <h2 className="sl-section-title">
               <em>The</em>Details
@@ -480,6 +491,7 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
               <p className="sl-kicker sl-muted" style={{ marginTop: 4 }}>
                 {inv?.save_date_text ?? occasion}
               </p>
+              <BerryDivider />
               <p className="word">SAVE</p>
               <div className="the">the</div>
               <p className="word">DATE</p>
@@ -505,7 +517,10 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
                 </div>
               ) : null}
               {inv.closing_letter ? <p className="sl-closing-letter">{inv.closing_letter}</p> : null}
-              <div className="sl-sig">{inv.closing_signature ?? name}</div>
+              <div className="sl-sig">
+                <Strawberry size={22} rotate={-12} />
+                {inv.closing_signature ?? name}
+              </div>
             </Reveal>
           ) : null}
         </div>
