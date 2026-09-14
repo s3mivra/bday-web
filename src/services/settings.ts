@@ -1,4 +1,13 @@
 import { supabase } from '@/lib/supabase';
+
+/** The project ref (the subdomain of VITE_SUPABASE_URL), shown in setup errors so a wrong project is easy to spot. */
+function projectRef(): string {
+  try {
+    return new URL(import.meta.env.VITE_SUPABASE_URL).hostname.split('.')[0] ?? 'unknown';
+  } catch {
+    return 'unknown';
+  }
+}
 import type { EventSettings, HeroSettings, InvitationSettings, SiteContent } from '@/types';
 
 /**
@@ -61,7 +70,7 @@ export const DEFAULT_INVITATION: Omit<InvitationSettings, 'updated_at'> = {
  * 42P01 from Postgres). Projects that have not re-run schema.sql since the
  * Starlight sections were added should keep rendering, not fail outright.
  */
-function isMissingTable(error: { code?: string } | null): boolean {
+function isMissingTable(error: { code?: string; message?: string } | null): boolean {
   return error?.code === 'PGRST205' || error?.code === '42P01';
 }
 
@@ -118,7 +127,10 @@ export async function saveInvitationSettings(values: Partial<InvitationSettings>
     .single();
   if (error) {
     if (isMissingTable(error)) {
-      throw new Error('The invitation_settings table is missing. Run supabase/migrations/001_invitation_settings.sql in the Supabase SQL editor, then reload this page.');
+      throw new Error(
+        `Supabase project "${projectRef()}" cannot see the invitation_settings table (${error.code}). ` +
+          'Run supabase/migrations/001_invitation_settings.sql in the SQL editor of that same project, then reload this page.',
+      );
     }
     throw error;
   }

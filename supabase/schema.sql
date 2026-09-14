@@ -218,6 +218,12 @@ begin
 end
 $$;
 
+-- Newer Supabase projects do not expose new tables to the API automatically,
+-- so grant access explicitly. RLS above still decides which rows are allowed.
+grant usage on schema public to anon, authenticated;
+grant select on public.invitation_settings to anon, authenticated;
+grant insert, update, delete on public.invitation_settings to authenticated;
+
 drop policy if exists gallery_public_read on public.gallery;
 create policy gallery_public_read on public.gallery
   for select to anon

@@ -71,6 +71,12 @@ create policy invitation_settings_admin_write on public.invitation_settings
   using (true)
   with check (true);
 
+-- Newer Supabase projects do not expose new tables to the API automatically,
+-- so grant access explicitly. RLS above still decides which rows are allowed.
+grant usage on schema public to anon, authenticated;
+grant select on public.invitation_settings to anon, authenticated;
+grant insert, update, delete on public.invitation_settings to authenticated;
+
 -- 4. Single design: the theme column is no longer restricted
 alter table public.hero_settings drop constraint if exists hero_settings_theme_check;
 
