@@ -290,6 +290,23 @@
 .sl-closing-letter { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 18px; max-width: 440px; margin: 18px auto 0; white-space: pre-line; }
 .sl-sig { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; letter-spacing: .12em; font-size: 26px; margin-top: 16px; display: inline-flex; align-items: center; gap: 10px; background: var(--sl-night2); color: var(--sl-gold); padding: 8px 24px; border-radius: 14px; }
 
+/* Softcopy */
+.sl-paper {
+  display: block; position: relative; margin: 6px auto 0; width: min(360px, 100%); padding: 10px; background: #fff;
+  border-radius: 6px; box-shadow: 0 2px 0 #ffd6e2, 0 18px 40px var(--sl-shadow); transform: rotate(-1.2deg);
+  transition: transform .3s;
+}
+.sl-paper::before {
+  content: ''; position: absolute; top: -12px; left: 50%; width: 86px; height: 24px; margin-left: -43px;
+  background: #ffc2d4cc; border-radius: 2px; transform: rotate(2deg);
+}
+.sl-paper:hover { transform: rotate(0deg) translateY(-3px); }
+.sl-paper img { display: block; width: 100%; height: auto; border-radius: 3px; }
+.sl-softcopy-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }
+.sl-softcopy-actions .sl-btn { margin-top: 0; border: 0; cursor: pointer; font-family: inherit; }
+.sl-btn-light { background: var(--sl-lav); color: var(--sl-night); box-shadow: inset 0 0 0 1.5px #f5a3bb; }
+.sl-btn:disabled { opacity: .6; cursor: progress; }
+
 @media (min-width: 768px) {
   .sl-main { max-width: 680px; }
   .sl-bubble { padding: 44px 40px; }
@@ -300,7 +317,7 @@
   .sl-rsvp-actions { grid-template-columns: 1fr; text-align: center; justify-items: center; }
   .sl-send { width: 100%; }
 }
-@media (max-width: 460px) { .sl-gp { grid-template-columns: 1fr; } .sl-banner-berry { display: none; } }
+@media (max-width: 460px) { .sl-softcopy-actions .sl-btn { width: 100%; } .sl-gp { grid-template-columns: 1fr; } .sl-banner-berry { display: none; } }
 @media (max-width: 360px) {
   .sl-main { padding: 0 12px 60px; }
   .sl-bubble { padding: 28px 16px; }

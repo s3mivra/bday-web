@@ -110,8 +110,18 @@ create table if not exists public.invitation_settings (
   closing_signature     text check (length(closing_signature) <= 60),
   closing_image_url     text check (closing_image_url ~* '^https?://'),
   closing_image_path    text,
+  softcopy_title        text check (length(softcopy_title) <= 60),
+  softcopy_text         text check (length(softcopy_text) <= 200),
+  softcopy_image_url    text check (softcopy_image_url ~* '^https?://'),
+  softcopy_image_path   text,
   updated_at            timestamptz not null default now()
 );
+
+-- Bring existing projects up to date (no-op on a fresh database).
+alter table public.invitation_settings add column if not exists softcopy_title text;
+alter table public.invitation_settings add column if not exists softcopy_text text;
+alter table public.invitation_settings add column if not exists softcopy_image_url text;
+alter table public.invitation_settings add column if not exists softcopy_image_path text;
 
 create table if not exists public.about_settings (
   id                integer primary key default 1 check (id = 1),

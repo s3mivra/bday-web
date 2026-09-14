@@ -12,7 +12,7 @@ import type { InvitationSettings } from '@/types';
 
 type TextKey = Exclude<
   keyof InvitationSettings,
-  'id' | 'updated_at' | 'envelope_enabled' | 'song_path' | 'countdown_image_path' | 'photo_image_path' | 'closing_image_path'
+  'id' | 'updated_at' | 'envelope_enabled' | 'song_path' | 'countdown_image_path' | 'photo_image_path' | 'closing_image_path' | 'softcopy_image_path'
 >;
 
 type FormState = Record<TextKey, string> & {
@@ -21,6 +21,7 @@ type FormState = Record<TextKey, string> & {
   countdown_image_path: string | null;
   photo_image_path: string | null;
   closing_image_path: string | null;
+  softcopy_image_path: string | null;
 };
 
 const TEXT_KEYS = Object.keys(DEFAULT_INVITATION).filter(
@@ -44,6 +45,7 @@ function toFormValues(row: InvitationSettings | null): FormState {
     countdown_image_path: source.countdown_image_path,
     photo_image_path: source.photo_image_path,
     closing_image_path: source.closing_image_path,
+    softcopy_image_path: source.softcopy_image_path,
   };
 }
 
@@ -144,6 +146,7 @@ export default function InvitationEditor() {
         countdown_image_path: values.countdown_image_path,
         photo_image_path: values.photo_image_path,
         closing_image_path: values.closing_image_path,
+        softcopy_image_path: values.softcopy_image_path,
       });
       applyInvitation(saved);
       setValues(toFormValues(saved));
@@ -236,6 +239,15 @@ export default function InvitationEditor() {
           {image('closing_image_url', 'closing_image_path', 'Closing photo', 'Square crops work best.')}
           {area('closing_letter', 'Closing letter', { max: 800, rows: 5 })}
           {text('closing_signature', 'Signature', { max: 60, hint: "Defaults to the celebrant's name." })}
+        </Card>
+
+        <Card
+          title="Invitation softcopy"
+          description="An image of the invitation card, shown at the very bottom so guests can view it full size or save a copy. Leave the image empty to hide the section."
+        >
+          {image('softcopy_image_url', 'softcopy_image_path', 'Invitation image', 'A portrait image of the whole invitation works best. JPG, PNG or WebP up to 5 MB.')}
+          {text('softcopy_title', 'Title', { max: 60 })}
+          {area('softcopy_text', 'Short note', { max: 200, rows: 2, hint: 'For example: Save this copy on your phone so you have the details handy.' })}
         </Card>
 
         <FormActions

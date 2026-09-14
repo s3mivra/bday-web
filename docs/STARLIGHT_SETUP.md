@@ -76,6 +76,7 @@ Work through them in this order.
 | Godparents | Ninong and Ninang, one name per line |
 | Details | Gift guide, reminders (one per line) and a photo |
 | Save the date and closing | Line above SAVE THE DATE, closing photo, letter and signature |
+| Invitation softcopy | An image of the invitation card, a title and a short note. Shown at the bottom with View full size and Save a copy buttons. |
 
 Empty sections are hidden on the invitation.
 
@@ -92,5 +93,6 @@ Empty sections are hidden on the invitation.
 | "Supabase is not configured" screen | The env values are missing. Add them, then redeploy or restart `npm run dev`. |
 | Setup notice on the home page | Save Event details at least once. |
 | "The invitation_settings table is missing" | Run `supabase/migrations/001_invitation_settings.sql` in the SQL Editor, then reload the admin page. Check that the env values point to the same Supabase project. |
+| "missing a newer invitation column" | Run `supabase/migrations/002_invitation_softcopy.sql` in the SQL Editor, then reload the admin page. |
 | A song upload is rejected | Run the same migration; it allows MP3 and M4A files up to 15 MB. |
 | Photo upload rejected | Use JPG, PNG, WebP or AVIF under 5 MB. |

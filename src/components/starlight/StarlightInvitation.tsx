@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   Bell,
+  Download,
+  Maximize2,
   Church,
   CircleCheck,
   Clock,
@@ -164,6 +166,35 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
   const startsAt = formatTime(inv?.ceremony_time ?? event.start_time);
 
   const rsvpUrl = safeExternalUrl(event.rsvp_url);
+  const softcopyUrl = safeExternalUrl(inv?.softcopy_image_url);
+  const [isSavingCopy, setIsSavingCopy] = useState(false);
+
+  /**
+   * The image lives on the Supabase storage domain, where the download attribute
+   * is ignored, so fetch it as a blob first. Falls back to opening it in a tab
+   * (long-press to save on phones) if the fetch is blocked.
+   */
+  async function saveSoftcopy() {
+    if (!softcopyUrl) return;
+    setIsSavingCopy(true);
+    try {
+      const response = await fetch(softcopyUrl);
+      if (!response.ok) throw new Error('download failed');
+      const blob = await response.blob();
+      const extension = blob.type.split('/')[1]?.replace('jpeg', 'jpg') ?? 'jpg';
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${name.trim().replace(/\s+/g, '-').toLowerCase() || 'invitation'}-invitation.${extension}`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    } catch {
+      window.open(softcopyUrl, '_blank', 'noopener,noreferrer');
+    } finally {
+      setIsSavingCopy(false);
+    }
+  }
   const ninong = lines(inv?.ninong);
   const ninang = lines(inv?.ninang);
   const reminders = lines(inv?.reminders);
@@ -520,6 +551,28 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
               <div className="sl-sig">
                 <Strawberry size={22} rotate={-12} />
                 {inv.closing_signature ?? name}
+              </div>
+            </Reveal>
+          ) : null}
+
+          {softcopyUrl ? (
+            <Reveal className="sl-bubble sl-softcopy">
+              <BerryDivider />
+              <p className="sl-kicker sl-muted">softcopy</p>
+              <h2 className="sl-section-title">{inv?.softcopy_title ?? 'Your copy of the invitation'}</h2>
+              {inv?.softcopy_text ? <p className="sl-muted" style={{ margin: '0 0 18px' }}>{inv.softcopy_text}</p> : null}
+              <a className="sl-paper" href={softcopyUrl} target="_blank" rel="noopener noreferrer">
+                <img src={softcopyUrl} alt={`Invitation card for ${name}`} loading="lazy" />
+              </a>
+              <div className="sl-softcopy-actions">
+                <a className="sl-btn" href={softcopyUrl} target="_blank" rel="noopener noreferrer">
+                  <Maximize2 aria-hidden="true" className="h-4 w-4" />
+                  View full size
+                </a>
+                <button type="button" className="sl-btn sl-btn-light" onClick={() => void saveSoftcopy()} disabled={isSavingCopy}>
+                  <Download aria-hidden="true" className="h-4 w-4" />
+                  {isSavingCopy ? 'Saving...' : 'Save a copy'}
+                </button>
               </div>
             </Reveal>
           ) : null}

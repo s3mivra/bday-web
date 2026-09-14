@@ -73,6 +73,10 @@ export type InvitationSettings = {
   closing_signature: string | null;
   closing_image_url: string | null;
   closing_image_path: string | null;
+  softcopy_title: string | null;
+  softcopy_text: string | null;
+  softcopy_image_url: string | null;
+  softcopy_image_path: string | null;
   updated_at: string;
 }
 

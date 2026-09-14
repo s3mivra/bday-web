@@ -136,6 +136,9 @@ export const invitationSettingsSchema = z.object({
   closing_letter: optionalText(800),
   closing_signature: optionalText(60),
   closing_image_url: httpUrl,
+  softcopy_title: optionalText(60),
+  softcopy_text: optionalText(200),
+  softcopy_image_url: httpUrl,
 });
 
 export type InvitationSettingsInput = z.input<typeof invitationSettingsSchema>;

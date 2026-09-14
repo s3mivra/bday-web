@@ -63,6 +63,10 @@ export const DEFAULT_INVITATION: Omit<InvitationSettings, 'updated_at'> = {
   closing_signature: null,
   closing_image_url: null,
   closing_image_path: null,
+  softcopy_title: 'Your copy of the invitation',
+  softcopy_text: null,
+  softcopy_image_url: null,
+  softcopy_image_path: null,
 };
 
 /**
@@ -126,6 +130,13 @@ export async function saveInvitationSettings(values: Partial<InvitationSettings>
     .select()
     .single();
   if (error) {
+    // PGRST204: a column in the payload is not in the schema cache (a newer migration was not run).
+    if (error.code === 'PGRST204') {
+      throw new Error(
+        `Supabase project "${projectRef()}" is missing a newer invitation column. ` +
+          'Run the files in supabase/migrations in order (001, then 002) in the SQL editor, then reload this page.',
+      );
+    }
     if (isMissingTable(error)) {
       throw new Error(
         `Supabase project "${projectRef()}" cannot see the invitation_settings table (${error.code}). ` +
