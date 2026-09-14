@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type WheelEvent as ReactWheelEvent } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type MouseEvent as ReactMouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import { Download, Minus, Plus, RotateCcw, X } from 'lucide-react';
 
@@ -10,68 +10,81 @@ interface ImageZoomProps {
   isSaving?: boolean;
 }
 
-interface Offset {
-  x: number;
-  y: number;
-}
-
 const MIN_SCALE = 1;
 const MAX_SCALE = 5;
+const DOUBLE_TAP_SCALE = 2.5;
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
+/** A point on the image (0..1 on each axis) that should stay under a screen position after zooming. */
+interface Anchor {
+  fx: number;
+  fy: number;
+  sx: number;
+  sy: number;
+}
+
 /**
- * Full-screen image viewer that stays on the site.
- * - Zoom: pinch, Ctrl + scroll (or a trackpad pinch), double tap, or the buttons.
- * - Move around while zoomed: drag, scroll or swipe, or the arrow keys.
- * Panning is limited to the image edges, so every corner is reachable and the
- * image never slides out of view. Escape, the close button or the backdrop closes it.
+ * Full-screen image viewer built for phones first.
+ *
+ * Zooming resizes the image itself instead of CSS-scaling a small bitmap, so
+ * text on the card stays sharp. Moving around uses the browser's own scrolling
+ * (momentum and scroll bars), and pinch and double tap zoom toward the fingers
+ * rather than the centre.
  */
 export function ImageZoom({ src, alt, onClose, onSave, isSaving }: ImageZoomProps) {
   const [scale, setScale] = useState(1);
-  const [offset, setOffset] = useState<Offset>({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
+  const [fitWidth, setFitWidth] = useState(0);
 
   const stageRef = useRef<HTMLDivElement | null>(null);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
   const scaleRef = useRef(1);
-  const pointers = useRef(new Map<number, { x: number; y: number }>());
-  const pinch = useRef<{ distance: number; scale: number } | null>(null);
-  const drag = useRef<{ x: number; y: number; ox: number; oy: number } | null>(null);
-  const lastTap = useRef(0);
-  const moved = useRef(false);
+  const anchorRef = useRef<Anchor | null>(null);
+  const frameRef = useRef(0);
 
-  /** Keeps the scaled image covering the stage where it is larger, and centred where it is smaller. */
-  const clampOffset = useCallback((next: Offset, atScale: number): Offset => {
+  /** Width that shows the whole image inside the stage. */
+  const measureFit = useCallback(() => {
     const stage = stageRef.current;
     const img = imgRef.current;
-    if (!stage || !img) return next;
-    const maxX = Math.max(0, (img.offsetWidth * atScale - stage.clientWidth) / 2);
-    const maxY = Math.max(0, (img.offsetHeight * atScale - stage.clientHeight) / 2);
-    return { x: clamp(next.x, -maxX, maxX), y: clamp(next.y, -maxY, maxY) };
+    if (!stage || !img || !img.naturalWidth) return;
+    const pad = 32;
+    const ratio = Math.min((stage.clientWidth - pad) / img.naturalWidth, (stage.clientHeight - pad) / img.naturalHeight);
+    setFitWidth(Math.max(1, Math.floor(img.naturalWidth * ratio)));
   }, []);
 
-  const applyScale = useCallback(
-    (next: number) => {
-      const value = clamp(next, MIN_SCALE, MAX_SCALE);
-      // Scale the offset with the zoom so the part being looked at stays in place.
-      const ratio = value / scaleRef.current;
-      scaleRef.current = value;
-      setScale(value);
-      setOffset((current) => clampOffset({ x: current.x * ratio, y: current.y * ratio }, value));
-    },
-    [clampOffset],
-  );
+  /** Zoom so the image point under (clientX, clientY) stays under the finger or cursor. */
+  const zoomAt = useCallback((next: number, clientX?: number, clientY?: number) => {
+    const stage = stageRef.current;
+    const img = imgRef.current;
+    const value = clamp(next, MIN_SCALE, MAX_SCALE);
+    if (!stage || !img || value === scaleRef.current) return;
 
-  const zoomBy = useCallback((delta: number) => applyScale(scaleRef.current + delta), [applyScale]);
+    const stageRect = stage.getBoundingClientRect();
+    const imgRect = img.getBoundingClientRect();
+    const px = clientX ?? stageRect.left + stageRect.width / 2;
+    const py = clientY ?? stageRect.top + stageRect.height / 2;
+    anchorRef.current = {
+      fx: clamp((px - imgRect.left) / imgRect.width, 0, 1),
+      fy: clamp((py - imgRect.top) / imgRect.height, 0, 1),
+      sx: px - stageRect.left,
+      sy: py - stageRect.top,
+    };
+    scaleRef.current = value;
+    setScale(value);
+  }, []);
 
-  const panBy = useCallback(
-    (dx: number, dy: number) => {
-      setOffset((current) => clampOffset({ x: current.x + dx, y: current.y + dy }, scaleRef.current));
-    },
-    [clampOffset],
-  );
+  // After the image is resized, scroll so the anchored point is back under the finger.
+  useLayoutEffect(() => {
+    const stage = stageRef.current;
+    const img = imgRef.current;
+    const anchor = anchorRef.current;
+    if (!stage || !img || !anchor) return;
+    anchorRef.current = null;
+    stage.scrollLeft = img.offsetLeft + anchor.fx * img.offsetWidth - anchor.sx;
+    stage.scrollTop = img.offsetTop + anchor.fy * img.offsetHeight - anchor.sy;
+  }, [scale]);
 
+  // Keyboard, resize, body scroll lock and focus handling.
   useEffect(() => {
     const previousFocus = document.activeElement as HTMLElement | null;
     const { overflow } = document.body.style;
@@ -79,132 +92,159 @@ export function ImageZoom({ src, alt, onClose, onSave, isSaving }: ImageZoomProp
     closeRef.current?.focus();
 
     const onKey = (event: KeyboardEvent) => {
-      const step = 60;
+      const stage = stageRef.current;
       if (event.key === 'Escape') onClose();
-      else if (event.key === '+' || event.key === '=') zoomBy(0.5);
-      else if (event.key === '-') zoomBy(-0.5);
-      else if (event.key === 'ArrowUp') panBy(0, step);
-      else if (event.key === 'ArrowDown') panBy(0, -step);
-      else if (event.key === 'ArrowLeft') panBy(step, 0);
-      else if (event.key === 'ArrowRight') panBy(-step, 0);
-      else return;
+      else if (event.key === '+' || event.key === '=') zoomAt(scaleRef.current + 0.5);
+      else if (event.key === '-') zoomAt(scaleRef.current - 0.5);
+      else if (stage && event.key.startsWith('Arrow')) {
+        const step = 80;
+        stage.scrollBy({
+          left: event.key === 'ArrowLeft' ? -step : event.key === 'ArrowRight' ? step : 0,
+          top: event.key === 'ArrowUp' ? -step : event.key === 'ArrowDown' ? step : 0,
+        });
+      } else return;
       event.preventDefault();
     };
-    const onResize = () => setOffset((current) => clampOffset(current, scaleRef.current));
 
     document.addEventListener('keydown', onKey);
-    window.addEventListener('resize', onResize);
+    window.addEventListener('resize', measureFit);
     return () => {
       document.removeEventListener('keydown', onKey);
-      window.removeEventListener('resize', onResize);
+      window.removeEventListener('resize', measureFit);
       document.body.style.overflow = overflow;
       previousFocus?.focus?.();
     };
-  }, [onClose, zoomBy, panBy, clampOffset]);
+  }, [onClose, zoomAt, measureFit]);
 
-  function onPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
-    if ((event.target as HTMLElement).closest('button')) return;
-    try {
-      // Keeps receiving moves when the finger leaves the image; some browsers throw for synthetic pointers.
-      event.currentTarget.setPointerCapture(event.pointerId);
-    } catch {
-      /* capture is an enhancement only */
-    }
-    pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    moved.current = false;
+  // Touch gestures. Native listeners because pinch needs a non-passive touchmove
+  // to stop the whole page from zooming; one-finger moves are left to native scrolling.
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
 
-    if (pointers.current.size === 2) {
-      const [a, b] = [...pointers.current.values()];
-      pinch.current = { distance: Math.hypot(a!.x - b!.x, a!.y - b!.y) || 1, scale: scaleRef.current };
-      drag.current = null;
-    } else {
-      drag.current = { x: event.clientX, y: event.clientY, ox: offset.x, oy: offset.y };
-      setIsDragging(true);
-    }
-  }
+    let pinch: { distance: number; scale: number } | null = null;
+    let lastTap = { time: 0, x: 0, y: 0 };
+    let tapStart: { x: number; y: number } | null = null;
 
-  function onPointerMove(event: ReactPointerEvent<HTMLDivElement>) {
-    if (!pointers.current.has(event.pointerId)) return;
-    pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    const distance = (touches: TouchList) =>
+      Math.hypot(touches[0]!.clientX - touches[1]!.clientX, touches[0]!.clientY - touches[1]!.clientY);
 
-    if (pinch.current && pointers.current.size === 2) {
-      const [a, b] = [...pointers.current.values()];
-      const distance = Math.hypot(a!.x - b!.x, a!.y - b!.y);
-      applyScale((pinch.current.scale * distance) / pinch.current.distance);
-      moved.current = true;
-      return;
-    }
-
-    if (drag.current) {
-      const dx = event.clientX - drag.current.x;
-      const dy = event.clientY - drag.current.y;
-      if (Math.abs(dx) + Math.abs(dy) > 4) moved.current = true;
-      if (scaleRef.current > 1) {
-        setOffset(clampOffset({ x: drag.current.ox + dx, y: drag.current.oy + dy }, scaleRef.current));
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length === 2) {
+        pinch = { distance: distance(event.touches) || 1, scale: scaleRef.current };
+        tapStart = null;
+      } else if (event.touches.length === 1) {
+        tapStart = { x: event.touches[0]!.clientX, y: event.touches[0]!.clientY };
       }
-    }
-  }
+    };
 
-  function onPointerUp(event: ReactPointerEvent<HTMLDivElement>) {
-    pointers.current.delete(event.pointerId);
-    if (pointers.current.size < 2) pinch.current = null;
-    if (pointers.current.size === 1) {
-      // One finger lifted after a pinch: continue as a drag from the remaining finger.
-      const [rest] = [...pointers.current.values()];
-      drag.current = { x: rest!.x, y: rest!.y, ox: offset.x, oy: offset.y };
-    }
-    if (pointers.current.size === 0) {
-      drag.current = null;
-      setIsDragging(false);
-    }
+    const onTouchMove = (event: TouchEvent) => {
+      if (event.touches.length === 2 && pinch) {
+        event.preventDefault();
+        const midX = (event.touches[0]!.clientX + event.touches[1]!.clientX) / 2;
+        const midY = (event.touches[0]!.clientY + event.touches[1]!.clientY) / 2;
+        const next = (pinch.scale * distance(event.touches)) / pinch.distance;
+        cancelAnimationFrame(frameRef.current);
+        frameRef.current = requestAnimationFrame(() => zoomAt(next, midX, midY));
+        return;
+      }
+      if (tapStart && event.touches.length === 1) {
+        const t = event.touches[0]!;
+        if (Math.abs(t.clientX - tapStart.x) + Math.abs(t.clientY - tapStart.y) > 10) tapStart = null;
+      }
+    };
 
-    // Double tap toggles between fit and 2.5x (mouse users get onDoubleClick).
-    if (!moved.current && event.pointerType !== 'mouse') {
+    const onTouchEnd = (event: TouchEvent) => {
+      if (event.touches.length < 2) pinch = null;
+      if (!tapStart || event.touches.length > 0) return;
+
+      const touch = event.changedTouches[0]!;
       const now = Date.now();
-      if (now - lastTap.current < 300) {
-        applyScale(scaleRef.current > 1 ? 1 : 2.5);
-        lastTap.current = 0;
+      const isDoubleTap =
+        now - lastTap.time < 320 && Math.abs(touch.clientX - lastTap.x) < 30 && Math.abs(touch.clientY - lastTap.y) < 30;
+
+      if (isDoubleTap) {
+        event.preventDefault(); // stop the browser's own double-tap zoom
+        zoomAt(scaleRef.current > 1.05 ? 1 : DOUBLE_TAP_SCALE, touch.clientX, touch.clientY);
+        lastTap = { time: 0, x: 0, y: 0 };
       } else {
-        lastTap.current = now;
+        lastTap = { time: now, x: touch.clientX, y: touch.clientY };
       }
-    }
+      tapStart = null;
+    };
+
+    // iOS Safari fires its own gesture events for pinch; block them so only the image zooms.
+    const blockGesture = (event: Event) => event.preventDefault();
+
+    stage.addEventListener('touchstart', onTouchStart, { passive: true });
+    stage.addEventListener('touchmove', onTouchMove, { passive: false });
+    stage.addEventListener('touchend', onTouchEnd, { passive: false });
+    stage.addEventListener('gesturestart', blockGesture);
+    stage.addEventListener('gesturechange', blockGesture);
+    return () => {
+      cancelAnimationFrame(frameRef.current);
+      stage.removeEventListener('touchstart', onTouchStart);
+      stage.removeEventListener('touchmove', onTouchMove);
+      stage.removeEventListener('touchend', onTouchEnd);
+      stage.removeEventListener('gesturestart', blockGesture);
+      stage.removeEventListener('gesturechange', blockGesture);
+    };
+  }, [zoomAt]);
+
+  // Desktop: Ctrl + wheel or a trackpad pinch zooms at the cursor; plain wheel scrolls natively.
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (!stage) return;
+    const onWheel = (event: WheelEvent) => {
+      if (!event.ctrlKey && !event.metaKey) return;
+      event.preventDefault();
+      zoomAt(scaleRef.current * (1 - event.deltaY * 0.01), event.clientX, event.clientY);
+    };
+    stage.addEventListener('wheel', onWheel, { passive: false });
+    return () => stage.removeEventListener('wheel', onWheel);
+  }, [zoomAt]);
+
+  // Desktop: drag with the mouse to move around.
+  const mouseDrag = useRef<{ x: number; y: number; left: number; top: number; moved: boolean } | null>(null);
+  function onMouseDown(event: ReactMouseEvent<HTMLDivElement>) {
+    const stage = stageRef.current;
+    if (!stage || event.button !== 0 || scaleRef.current <= 1) return;
+    event.preventDefault();
+    mouseDrag.current = { x: event.clientX, y: event.clientY, left: stage.scrollLeft, top: stage.scrollTop, moved: false };
+    const onMove = (move: MouseEvent) => {
+      const drag = mouseDrag.current;
+      if (!drag) return;
+      drag.moved ||= Math.abs(move.clientX - drag.x) + Math.abs(move.clientY - drag.y) > 3;
+      stage.scrollLeft = drag.left - (move.clientX - drag.x);
+      stage.scrollTop = drag.top - (move.clientY - drag.y);
+    };
+    const onUp = () => {
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseup', onUp);
+      window.setTimeout(() => (mouseDrag.current = null), 0);
+    };
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onUp);
   }
 
-  /** Scroll (or a two-finger trackpad swipe) moves around; Ctrl + scroll or a trackpad pinch zooms. */
-  function onWheel(event: ReactWheelEvent<HTMLDivElement>) {
-    if (event.ctrlKey || event.metaKey) {
-      applyScale(scaleRef.current * (1 - event.deltaY * 0.01));
-      return;
-    }
-    if (scaleRef.current > 1) {
-      panBy(-event.deltaX, -event.deltaY);
-    } else if (event.deltaY < 0) {
-      // At normal size there is nothing to scroll, so scrolling up zooms in to get started.
-      applyScale(1.5);
-    }
-  }
+  const width = fitWidth ? Math.round(fitWidth * scale) : undefined;
+  const closeIfBackdrop = (event: ReactMouseEvent<HTMLElement>) => {
+    if (event.target === event.currentTarget && scaleRef.current === 1 && !mouseDrag.current?.moved) onClose();
+  };
 
   return createPortal(
-    <div
-      className="sl-zoom"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Invitation image viewer"
-      onClick={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
-    >
+    <div className="sl-zoom" role="dialog" aria-modal="true" aria-label="Invitation image viewer">
       <div className="sl-zoom-bar">
         <span className="sl-zoom-level" aria-live="polite">
           {Math.round(scale * 100)}%
         </span>
-        <button type="button" onClick={() => zoomBy(-0.5)} disabled={scale <= MIN_SCALE} aria-label="Zoom out">
+        <button type="button" onClick={() => zoomAt(scale - 0.5)} disabled={scale <= MIN_SCALE} aria-label="Zoom out">
           <Minus className="h-5 w-5" />
         </button>
-        <button type="button" onClick={() => zoomBy(0.5)} disabled={scale >= MAX_SCALE} aria-label="Zoom in">
+        <button type="button" onClick={() => zoomAt(scale + 0.5)} disabled={scale >= MAX_SCALE} aria-label="Zoom in">
           <Plus className="h-5 w-5" />
         </button>
-        <button type="button" onClick={() => applyScale(1)} disabled={scale === 1} aria-label="Reset zoom">
+        <button type="button" onClick={() => zoomAt(1)} disabled={scale === 1} aria-label="Fit to screen">
           <RotateCcw className="h-5 w-5" />
         </button>
         {onSave ? (
@@ -221,28 +261,25 @@ export function ImageZoom({ src, alt, onClose, onSave, isSaving }: ImageZoomProp
         ref={stageRef}
         className="sl-zoom-stage"
         data-zoomed={scale > 1}
-        data-dragging={isDragging}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-        onDoubleClick={() => applyScale(scaleRef.current > 1 ? 1 : 2.5)}
-        onWheel={onWheel}
-        onClick={(event) => {
-          if (event.target === event.currentTarget && scale === 1 && !moved.current) onClose();
-        }}
+        onMouseDown={onMouseDown}
+        onDoubleClick={(event) => zoomAt(scaleRef.current > 1.05 ? 1 : DOUBLE_TAP_SCALE, event.clientX, event.clientY)}
+        onClick={closeIfBackdrop}
       >
-        <img
-          ref={imgRef}
-          src={src}
-          alt={alt}
-          draggable={false}
-          style={{ transform: `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${scale})` }}
-        />
+        <div className="sl-zoom-canvas" onClick={closeIfBackdrop}>
+          <img
+            ref={imgRef}
+            src={src}
+            alt={alt}
+            draggable={false}
+            decoding="async"
+            onLoad={measureFit}
+            style={{ width, visibility: fitWidth ? 'visible' : 'hidden' }}
+          />
+        </div>
       </div>
 
       <p className="sl-zoom-hint">
-        {scale > 1 ? 'Drag or scroll to move around. Double tap to fit.' : 'Pinch, double tap or press + to zoom in.'}
+        {scale > 1 ? 'Drag to move around. Double tap to fit.' : 'Pinch or double tap where you want to zoom.'}
       </p>
     </div>,
     document.body,

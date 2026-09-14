@@ -323,20 +323,20 @@
 .sl-zoom-bar button:disabled { opacity: .35; cursor: default; }
 .sl-zoom-bar button.close { background: #fff; color: #b3123f; }
 .sl-zoom-level { margin-right: auto; color: #ffd6e2; font-size: 13px; font-weight: 600; letter-spacing: .1em; }
+/* Native scrolling container: momentum and scroll bars come from the browser. */
 .sl-zoom-stage {
-  flex: 1; min-height: 0; display: grid; place-items: center; overflow: hidden; touch-action: none;
-  padding: 8px 16px; cursor: zoom-in;
+  flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  touch-action: pan-x pan-y; cursor: zoom-in; scrollbar-width: thin; scrollbar-color: #ffb3c9 transparent;
 }
 .sl-zoom-stage[data-zoomed='true'] { cursor: grab; }
-.sl-zoom-stage[data-zoomed='true'][data-dragging='true'] { cursor: grabbing; }
-/* No easing while a finger or mouse is moving the image, so it follows exactly. */
-.sl-zoom-stage[data-dragging='true'] img { transition: none; }
-.sl-zoom-stage img {
-  max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; user-select: none;
-  box-shadow: 0 20px 60px #0008; transition: transform .12s ease-out; will-change: transform;
+.sl-zoom-stage[data-zoomed='true']:active { cursor: grabbing; }
+.sl-zoom-canvas { display: flex; align-items: center; justify-content: center; min-width: 100%; min-height: 100%; width: max-content; padding: 16px; box-sizing: border-box; }
+.sl-zoom-canvas img {
+  display: block; max-width: none; height: auto; border-radius: 6px; user-select: none; -webkit-user-select: none;
+  -webkit-touch-callout: default; box-shadow: 0 20px 60px #0008; image-rendering: auto;
 }
 .sl-zoom-hint { margin: 0; padding: 10px 16px; padding-bottom: max(14px, env(safe-area-inset-bottom)); text-align: center; color: #ffd6e2; font-size: 13px; }
-@media (prefers-reduced-motion: reduce) { .sl-zoom { animation: none; } .sl-zoom-stage img { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .sl-zoom { animation: none; } }
 
 @media (min-width: 768px) {
   .sl-main { max-width: 680px; }
