@@ -6,8 +6,6 @@ import { useSiteContent } from '@/hooks/useSiteContent';
 
 const LINKS = [
   { to: '/', label: 'Invitation' },
-  { to: '/about', label: 'The celebrant' },
-  { to: '/details', label: 'Details' },
   { to: '/gallery', label: 'Gallery' },
   { to: '/rsvp', label: 'RSVP' },
 ] as const;

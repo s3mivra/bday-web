@@ -1,7 +1,7 @@
 /*
- * Starlight theme: envelope intro and night-sky invitation.
- * Everything is scoped under .sl so the other themes are untouched. Base colours
- * come from the [data-theme='starlight'] channels in src/index.css.
+ * The invitation design: envelope intro and night-sky page.
+ * Everything is scoped under .sl so the admin and other pages keep their own styles. Base colours
+ * come from the palette channels in src/index.css.
  */
 
 .sl {

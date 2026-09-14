@@ -36,7 +36,7 @@ Create a free project at supabase.com, then open **SQL Editor** and run the whol
 - `event_settings`, `hero_settings`, `about_settings` — singleton rows pinned to `id = 1`
 - `gallery` — one row per photo, with `display_order` and `is_visible`
 - `rsvps` — responses for the built-in RSVP form
-- `invitation_settings` : singleton row for the Starlight theme sections
+- `invitation_settings` : singleton row for the invitation sections (envelope, music, ceremony, godparents and more)
 - `updated_at` triggers, RLS policies, and the `invitation-media` storage bucket with its object policies
 
 Optionally run `supabase/seed.sql` for placeholder content so the site renders before you have filled anything in.
@@ -77,16 +77,14 @@ pnpm preview
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Hero, countdown, about, details, gallery preview, RSVP call to action |
-| `/about` | About the celebrant |
-| `/details` | Date, time, venue, dress code, notes, Maps link |
+| `/` | The invitation: envelope intro, hero, countdown, location, godparents, details, RSVP, save the date, closing letter |
 | `/gallery` | Full paginated gallery with lightbox |
 | `/rsvp` | QR + form link, or the built-in RSVP form |
 | `/admin` | Dashboard (auth required) |
 | `/admin/login` | Sign in |
-| `/admin/event`, `/hero`, `/about`, `/gallery` | Content editors |
+| `/admin/event`, `/hero`, `/gallery` | Content editors |
 | `/admin/rsvp` | RSVP method, form URL, deadline, QR preview, responses |
-| `/admin/invitation` | Starlight theme sections: envelope, music, ceremony, godparents, reminders, closing letter |
+| `/admin/invitation` | Invitation sections: envelope, music, ceremony, godparents, reminders, closing letter |
 
 ---
 
@@ -113,21 +111,21 @@ Deleting a photo removes the row first and then the object. If the object delete
 
 ---
 
-## Starlight theme (envelope invitation)
+## The invitation design (Starlight)
 
-Pick **Starlight (envelope)** under **Admin, Hero, Site theme** to turn the home page into a single long invitation:
+The site has one design. The home page is a single long invitation:
 
 - A full-screen envelope intro. Guests tap a wax seal, the flap opens and the letter grows into the page. Add `?to=Guest%20Name` to a shared link to address the envelope to that guest.
-- Hero with the celebrant name, Hero headline as the occasion, and the Hero image in a round frame.
+- Hero with the celebrant name, the Hero occasion, and the Hero main photo in a round frame.
 - Date ticket, music player, countdown, ceremony and reception cards with map previews, godparents (ninong and ninang), dress code, gift guide, reminders, RSVP with a QR code for the Google Form, save the date and a closing letter.
 
 Content comes from the existing tables plus `invitation_settings`, edited at **Admin, Invitation sections**. The reception uses the venue, address, start time and Google Maps link from Event details. Empty sections are hidden.
 
 Step by step setup, including the admin login, env vars and which field goes where: [docs/STARLIGHT_SETUP.md](docs/STARLIGHT_SETUP.md).
 
-After pulling this change, re-run `supabase/schema.sql` once. It adds the `invitation_settings` table, allows the `starlight` theme value, and lets the `invitation-media` bucket accept MP3 and M4A files (up to 15 MB; images are still limited to 5 MB in the app). Until then the site keeps working and the Starlight sections fall back to defaults.
+After pulling this change, re-run `supabase/schema.sql` once. It adds the `invitation_settings` table, drops the old theme check on `hero_settings`, and lets the `invitation-media` bucket accept MP3 and M4A files (up to 15 MB; images are still limited to 5 MB in the app). Until then the site keeps working and the invitation sections fall back to defaults.
 
-The theme styles live in `src/components/starlight/starlight.css`, scoped under `.sl`, and its fonts (Playfair Display, Sacramento, Quicksand) load only when the theme is active.
+The invitation styles live in `src/components/starlight/starlight.css`, scoped under `.sl`, and its fonts (Playfair Display, Sacramento, Quicksand) load with the invitation page. The Gallery, RSVP and admin pages use the same night-sky palette from `src/index.css`.
 
 ---
 
@@ -152,7 +150,7 @@ After deploying, add the production origin to **Supabase → Authentication → 
 
 **Admin editors block until content loads.** `RequireAuth` waits on both the auth session and the content fetch, and refuses to render the editors if the fetch failed. `getSession()` resolves from local storage and usually beats the network, so without this an editor could mount against a null row, seed its form from the defaults, and overwrite real content on the next save.
 
-**One content fetch per session.** `SiteContentProvider` loads event/hero/about once and shares it across routes, so navigation costs no queries. Admin editors push the saved row back into the provider via `applyEvent`/`applyHero`/`applyAbout`, which is why the public site reflects changes immediately without a refetch or a reload.
+**One content fetch per session.** `SiteContentProvider` loads event/hero/invitation once and shares it across routes, so navigation costs no queries. Admin editors push the saved row back into the provider via `applyEvent`/`applyHero`/`applyInvitation`, which is why the public site reflects changes immediately without a refetch or a reload.
 
 **Gallery pagination.** The public grid pulls 12 rows at a time through a range query rather than loading the whole album. Reordering writes the entire new order in a single upsert instead of one update per row.
 
@@ -172,9 +170,9 @@ Semantic landmarks and a single `h1` per page; a skip link to `#main`; visible f
 
 1. Create a new Supabase project and run `supabase/schema.sql`.
 2. Point `.env` at it and deploy a fresh Vercel project.
-3. Sign in at `/admin`, fill in Event details, Hero, About, upload gallery photos, and set the RSVP method.
+3. Sign in at `/admin`, fill in Event details, Hero, RSVP and Invitation sections, and upload gallery photos.
 
-Nothing about the celebrant is hardcoded. To restyle, edit the palette and font families in `tailwind.config.js` and the two font links in `index.html` — the rest of the UI reads from those tokens.
+Nothing about the celebrant is hardcoded. To restyle, edit the palette in `src/index.css`, the invitation styles in `src/components/starlight/starlight.css`, the font families in `tailwind.config.js` and the two font links in `index.html` — the rest of the UI reads from those tokens.
 
 ---
 
@@ -184,7 +182,7 @@ Nothing about the celebrant is hardcoded. To restyle, edit the palette and font 
 src/
 ├── components/
 │   ├── layout/       SiteLayout, Navbar, AdminPage
-│   ├── hero/  about/  details/  countdown/
+│   ├── starlight/ (the invitation page)
 │   ├── gallery/      GalleryGrid, Lightbox
 │   ├── rsvp/         RsvpForm, RsvpQr
 │   └── ui/           Button, Field, ConfirmDialog, States, ErrorBoundary, ...

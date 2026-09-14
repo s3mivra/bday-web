@@ -1,6 +1,6 @@
-# Starlight theme setup
+# Invitation setup
 
-Step by step setup for the Starlight (envelope) invitation. Run `supabase/schema.sql` in the Supabase SQL Editor first. It is safe to re-run.
+Step by step setup for the invitation. Run `supabase/schema.sql` in the Supabase SQL Editor first. It is safe to re-run.
 
 ## 1. Create the admin login
 
@@ -52,9 +52,10 @@ Work through them in this order.
 | Field | What to enter |
 | --- | --- |
 | Small label | For example: Please join us to celebrate |
-| Headline | The occasion, for example: Christening & 1st Birthday |
-| Hero image | Main photo, shown in the round frame |
-| Site theme | **Starlight (envelope)** |
+| Occasion | For example: Christening & 1st Birthday |
+| Tagline | Optional line under the main photo |
+| Main photo | Shown in the round frame |
+| Show the countdown | On or off |
 
 ### RSVP
 

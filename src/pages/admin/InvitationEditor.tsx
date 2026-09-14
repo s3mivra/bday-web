@@ -1,10 +1,8 @@
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react';
-import { Link } from 'react-router-dom';
 import { AdminPage, FormActions } from '@/components/layout/AdminPage';
 import { AudioUploadField } from '@/components/ui/AudioUploadField';
 import { TextAreaField, TextField, ToggleField } from '@/components/ui/Field';
 import { ImageUploadField } from '@/components/ui/ImageUploadField';
-import { InfoPanel } from '@/components/ui/States';
 import { useSiteContent } from '@/hooks/useSiteContent';
 import { useToast } from '@/hooks/useToast';
 import { toErrorMessage } from '@/lib/supabase';
@@ -62,7 +60,7 @@ function Card({ title, description, children }: { title: string; description?: s
 }
 
 export default function InvitationEditor() {
-  const { hero, invitation, applyInvitation } = useSiteContent();
+  const { invitation, applyInvitation } = useSiteContent();
   const { notify } = useToast();
 
   const initial = useMemo(() => toFormValues(invitation), [invitation]);
@@ -160,19 +158,8 @@ export default function InvitationEditor() {
   return (
     <AdminPage
       title="Invitation sections"
-      description="Extra sections for the Starlight theme: the envelope, music, ceremony, godparents, reminders, save the date and closing letter."
+      description="The envelope, music, countdown, ceremony, godparents, reminders, save the date and closing letter."
     >
-      {hero?.theme !== 'starlight' ? (
-        <div className="mb-8">
-          <InfoPanel>
-            These sections only show with the Starlight theme. Pick it under{' '}
-            <Link to="/admin/hero" className="text-champagne underline-offset-4 hover:underline">
-              Hero, Site theme
-            </Link>
-            .
-          </InfoPanel>
-        </div>
-      ) : null}
 
       <form onSubmit={onSubmit} noValidate className="space-y-8">
         <Card title="Envelope intro" description="Guests tap a wax seal to open the invitation. Add ?to=Name to a link to address the envelope to someone.">

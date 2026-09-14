@@ -103,23 +103,10 @@ export const heroSettingsSchema = z.object({
   title: z.string().trim().min(1, 'Enter a hero headline.').max(80),
   subtitle: optionalText(200),
   image_url: httpUrl,
-  primary_cta_text: z.string().trim().min(1, 'Enter button text.').max(30),
-  secondary_cta_text: z.string().trim().min(1, 'Enter button text.').max(30),
   show_countdown: z.boolean(),
-  theme: z.enum(['midnight', 'rosewood', 'forest', 'noir', 'ocean', 'daylight', 'starlight']),
 });
 
 export type HeroSettingsInput = z.input<typeof heroSettingsSchema>;
-
-export const aboutSettingsSchema = z.object({
-  title: z.string().trim().min(1, 'Enter a section title.').max(80),
-  greeting: optionalText(120),
-  description: optionalText(900),
-  birthday_message: optionalText(600),
-  image_url: httpUrl,
-});
-
-export type AboutSettingsInput = z.input<typeof aboutSettingsSchema>;
 
 export const invitationSettingsSchema = z.object({
   envelope_enabled: z.boolean(),

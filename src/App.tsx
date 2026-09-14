@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, type ReactNode } from 'react';
+import { Suspense, lazy, type ReactNode } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { SiteLayout } from '@/components/layout/SiteLayout';
 import { SectionSkeleton } from '@/components/ui/Skeleton';
@@ -7,11 +7,8 @@ import { AuthProvider } from '@/hooks/useAuth';
 import { SiteContentProvider, useSiteContent } from '@/hooks/useSiteContent';
 import { ToastProvider } from '@/hooks/useToast';
 import { isSupabaseConfigured } from '@/lib/supabase';
-import { applyTheme } from '@/lib/themes';
 
 const Home = lazy(() => import('@/pages/Home'));
-const AboutPage = lazy(() => import('@/pages/AboutPage'));
-const DetailsPage = lazy(() => import('@/pages/DetailsPage'));
 const GalleryPage = lazy(() => import('@/pages/GalleryPage'));
 const RsvpPage = lazy(() => import('@/pages/RsvpPage'));
 const AdminApp = lazy(() => import('@/pages/admin/AdminApp'));
@@ -30,15 +27,6 @@ function PublicGate({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-/** Keeps <html data-theme> in sync with the saved hero theme. */
-function ThemeSync() {
-  const { hero } = useSiteContent();
-  useEffect(() => {
-    applyTheme(hero?.theme);
-  }, [hero?.theme]);
-  return null;
-}
-
 function PublicRoutes() {
   return (
     <PublicGate>
@@ -54,14 +42,14 @@ export default function App() {
     <ToastProvider>
       <AuthProvider>
         <SiteContentProvider>
-          <ThemeSync />
           <Suspense fallback={<SectionSkeleton />}>
             <Routes>
+              {/* The invitation is a full-bleed page with its own envelope intro, so it skips the navbar and footer. */}
+              <Route element={<PublicRoutes />}>
+                <Route index element={<Home />} />
+              </Route>
               <Route element={<SiteLayout />}>
                 <Route element={<PublicRoutes />}>
-                  <Route index element={<Home />} />
-                  <Route path="about" element={<AboutPage />} />
-                  <Route path="details" element={<DetailsPage />} />
                   <Route path="gallery" element={<GalleryPage />} />
                   <Route path="rsvp" element={<RsvpPage />} />
                 </Route>

@@ -114,7 +114,6 @@ export type Rsvp = {
 export interface SiteContent {
   event: EventSettings | null;
   hero: HeroSettings | null;
-  about: AboutSettings | null;
   invitation: InvitationSettings | null;
 }
 

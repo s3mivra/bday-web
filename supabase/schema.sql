@@ -64,15 +64,15 @@ create table if not exists public.hero_settings (
   primary_cta_text    text    not null default 'View invitation' check (length(primary_cta_text) <= 30),
   secondary_cta_text  text    not null default 'RSVP now' check (length(secondary_cta_text) <= 30),
   show_countdown      boolean not null default true,
-  theme               text    not null default 'midnight' check (theme in ('midnight', 'rosewood', 'forest', 'noir', 'ocean', 'daylight', 'starlight')),
+  theme               text    not null default 'starlight',
   updated_at          timestamptz not null default now()
 );
 
 -- Bring existing projects up to date (no-op on a fresh database).
-alter table public.hero_settings add column if not exists theme text not null default 'midnight';
+-- The invitation now has a single design (Starlight), so the theme column is
+-- kept only for compatibility and no longer restricted to a list of values.
+alter table public.hero_settings add column if not exists theme text not null default 'starlight';
 alter table public.hero_settings drop constraint if exists hero_settings_theme_check;
-alter table public.hero_settings add constraint hero_settings_theme_check
-  check (theme in ('midnight', 'rosewood', 'forest', 'noir', 'ocean', 'daylight', 'starlight'));
 
 -- Extra sections used by the Starlight theme (envelope intro, music, ceremony,
 -- godparents, reminders, save the date, closing letter). Reception details stay

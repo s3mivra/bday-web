@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { isSupabaseConfigured, toErrorMessage } from '@/lib/supabase';
 import { fetchSiteContent } from '@/services/settings';
-import type { AboutSettings, EventSettings, HeroSettings, InvitationSettings, SiteContent } from '@/types';
+import type { EventSettings, HeroSettings, InvitationSettings, SiteContent } from '@/types';
 
 interface SiteContentValue extends SiteContent {
   isLoading: boolean;
@@ -11,7 +11,6 @@ interface SiteContentValue extends SiteContent {
   refresh: () => Promise<void>;
   applyEvent: (event: EventSettings) => void;
   applyHero: (hero: HeroSettings) => void;
-  applyAbout: (about: AboutSettings) => void;
   applyInvitation: (invitation: InvitationSettings) => void;
 }
 
@@ -27,7 +26,6 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
   const [content, setContent] = useState<SiteContent>({
     event: null,
     hero: null,
-    about: null,
     invitation: null,
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -63,7 +61,6 @@ export function SiteContentProvider({ children }: { children: ReactNode }) {
       refresh,
       applyEvent: (event) => setContent((current) => ({ ...current, event })),
       applyHero: (hero) => setContent((current) => ({ ...current, hero })),
-      applyAbout: (about) => setContent((current) => ({ ...current, about })),
       applyInvitation: (invitation) => setContent((current) => ({ ...current, invitation })),
     }),
     [content, isLoading, error, refresh],
