@@ -91,5 +91,6 @@ Empty sections are hidden on the invitation.
 | --- | --- |
 | "Supabase is not configured" screen | The env values are missing. Add them, then redeploy or restart `npm run dev`. |
 | Setup notice on the home page | Save Event details at least once. |
-| Invitation sections will not save, or a song is rejected | Re-run `supabase/schema.sql`. |
+| "The invitation_settings table is missing" | Run `supabase/migrations/001_invitation_settings.sql` in the SQL Editor, then reload the admin page. Check that the env values point to the same Supabase project. |
+| A song upload is rejected | Run the same migration; it allows MP3 and M4A files up to 15 MB. |
 | Photo upload rejected | Use JPG, PNG, WebP or AVIF under 5 MB. |

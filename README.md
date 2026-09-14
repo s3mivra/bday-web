@@ -123,7 +123,7 @@ Content comes from the existing tables plus `invitation_settings`, edited at **A
 
 Step by step setup, including the admin login, env vars and which field goes where: [docs/STARLIGHT_SETUP.md](docs/STARLIGHT_SETUP.md).
 
-After pulling this change, re-run `supabase/schema.sql` once. It adds the `invitation_settings` table, drops the old theme check on `hero_settings`, and lets the `invitation-media` bucket accept MP3 and M4A files (up to 15 MB; images are still limited to 5 MB in the app). Until then the site keeps working and the invitation sections fall back to defaults.
+After pulling this change, run `supabase/migrations/001_invitation_settings.sql` (or re-run `supabase/schema.sql`) once. It adds the `invitation_settings` table, drops the old theme check on `hero_settings`, and lets the `invitation-media` bucket accept MP3 and M4A files (up to 15 MB; images are still limited to 5 MB in the app). Until then the site keeps working and the invitation sections fall back to defaults.
 
 The invitation styles live in `src/components/starlight/starlight.css`, scoped under `.sl`, and its fonts (Playfair Display, Sacramento, Quicksand) load with the invitation page. The Gallery, RSVP and admin pages use the same night-sky palette from `src/index.css`.
 

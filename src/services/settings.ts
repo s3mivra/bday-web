@@ -118,7 +118,7 @@ export async function saveInvitationSettings(values: Partial<InvitationSettings>
     .single();
   if (error) {
     if (isMissingTable(error)) {
-      throw new Error('The invitation_settings table is missing. Re-run supabase/schema.sql in the Supabase SQL editor.');
+      throw new Error('The invitation_settings table is missing. Run supabase/migrations/001_invitation_settings.sql in the Supabase SQL editor, then reload this page.');
     }
     throw error;
   }

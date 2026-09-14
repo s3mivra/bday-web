@@ -293,3 +293,9 @@ drop policy if exists invitation_media_admin_delete on storage.objects;
 create policy invitation_media_admin_delete on storage.objects
   for delete to authenticated
   using (bucket_id = 'invitation-media');
+
+-- ---------------------------------------------------------------------------
+-- Refresh the API schema cache so new tables are usable right away
+-- ---------------------------------------------------------------------------
+
+notify pgrst, 'reload schema';
