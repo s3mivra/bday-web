@@ -186,8 +186,8 @@ export default function RsvpSettings() {
                   size={160}
                   level="M"
                   marginSize={1}
-                  bgColor="#F6F1EA"
-                  fgColor="#150F1E"
+                  bgColor="#FFFFFF"
+                  fgColor="#5B1631"
                   aria-label="QR code preview for the RSVP form"
                 />
               </div>

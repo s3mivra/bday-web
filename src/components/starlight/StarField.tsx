@@ -4,13 +4,13 @@ interface StarFieldProps {
   count: number;
 }
 
-/** Decorative twinkling stars. Positions are generated once per mount. */
+/** Decorative twinkling hearts and dots. Positions are generated once per mount. */
 export function StarField({ count }: StarFieldProps) {
   const stars = useMemo(
     () =>
       Array.from({ length: count }, (_, index) => ({
         id: index,
-        glyph: Math.random() < 0.3 ? '✦' : '·',
+        glyph: Math.random() < 0.35 ? '♥︎' : '•',
         style: {
           left: `${Math.random() * 100}%`,
           top: `${Math.random() * 100}%`,

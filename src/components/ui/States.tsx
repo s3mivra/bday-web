@@ -12,7 +12,7 @@ interface ErrorStateProps {
 export function ErrorState({ title = 'This did not load', message, onRetry }: ErrorStateProps) {
   return (
     <div role="alert" className="shell flex flex-col items-center gap-4 py-24 text-center">
-      <TriangleAlert aria-hidden="true" className="h-8 w-8 text-rose-300" />
+      <TriangleAlert aria-hidden="true" className="h-8 w-8 text-rose-600" />
       <h2 className="text-2xl text-mist">{title}</h2>
       <p className="body-copy text-center">{message}</p>
       {onRetry ? (

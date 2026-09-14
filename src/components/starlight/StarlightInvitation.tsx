@@ -133,7 +133,7 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
 
   const inv = invitation;
   const name = event.celebrant_name;
-  const initial = name.trim().charAt(0).toUpperCase() || '✦';
+  const initial = name.trim().charAt(0).toUpperCase() || '♥︎';
   const occasion = hero?.title ?? 'You are invited';
 
   const [envelopeOpen, setEnvelopeOpen] = useState(!(inv?.envelope_enabled ?? true));
@@ -166,7 +166,7 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
   const ninong = lines(inv?.ninong);
   const ninang = lines(inv?.ninang);
   const reminders = lines(inv?.reminders);
-  const blockColors = ['#c9b8f0', '#f2c46d', '#f6b8a8', '#bfe3d6'];
+  const blockColors = ['#e8315a', '#ff7aa0', '#b3123f', '#f25c84'];
   const blocks = name.replace(/\s+/g, '').toUpperCase().slice(0, 6).split('');
   const shortDate = eventDate
     ? [eventDate.getMonth() + 1, eventDate.getDate(), eventDate.getFullYear() % 100]
@@ -180,7 +180,7 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
         <Envelope
           celebrantName={name}
           occasion={occasion}
-          heading={inv?.envelope_heading ?? 'A letter from the stars'}
+          heading={inv?.envelope_heading ?? 'A berry sweet letter'}
           onOpenStart={playSong}
           onOpened={() => setEnvelopeOpen(true)}
         />
@@ -205,7 +205,7 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
         <StarField count={45} />
         <div className="sl-rel">
           <p className="sl-kicker">{hero?.label ?? 'Please join us to celebrate'}</p>
-          <p className="sl-hello sl-hand">our little star</p>
+          <p className="sl-hello sl-hand">our sweetest berry</p>
           <h1 className="sl-name sl-display">{name}</h1>
           <p className="sl-occasion">{occasion}</p>
           <div className="sl-ring">
@@ -217,7 +217,7 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
         </div>
         <svg className="sl-clouds" viewBox="0 0 600 120" preserveAspectRatio="none" aria-hidden="true">
           <path
-            fill="#ebe4fb"
+            fill="#fff0f5"
             d="M0 70 Q40 30 90 55 Q120 10 180 40 Q230 5 280 45 Q330 15 380 50 Q430 20 480 48 Q530 25 570 55 Q600 45 620 60 L620 120 L0 120Z"
           />
         </svg>

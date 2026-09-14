@@ -213,7 +213,7 @@ export default function GalleryManager() {
                 <span
                   className={
                     task.status === 'failed'
-                      ? 'shrink-0 text-xs text-rose-300'
+                      ? 'shrink-0 text-xs text-rose-600'
                       : task.status === 'done'
                         ? 'shrink-0 text-xs text-emerald-300'
                         : 'shrink-0 text-xs text-champagne'
@@ -305,7 +305,7 @@ export default function GalleryManager() {
                     </span>
                   </Button>
                   <Button variant="ghost" size="sm" onClick={() => setPendingDelete(image)}>
-                    <Trash2 aria-hidden="true" className="h-4 w-4 text-rose-300" />
+                    <Trash2 aria-hidden="true" className="h-4 w-4 text-rose-600" />
                     <span className="sr-only">Delete photo {index + 1}</span>
                   </Button>
                 </div>

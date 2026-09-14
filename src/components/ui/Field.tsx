@@ -25,7 +25,7 @@ function FieldShell({ label, hint, error, required, htmlFor, children }: FieldSh
       {children}
       {hint && !error ? <p className="text-xs text-muted">{hint}</p> : null}
       {error ? (
-        <p className="flex items-start gap-1.5 text-xs text-rose-300">
+        <p className="flex items-start gap-1.5 text-xs text-rose-600">
           <AlertCircle aria-hidden="true" className="mt-px h-3.5 w-3.5 shrink-0" />
           {error}
         </p>
@@ -151,7 +151,7 @@ export function RadioGroupField({ legend, name, value, options, error, onChange 
                 value={option.value}
                 checked={selected}
                 onChange={() => onChange(option.value)}
-                className="mt-1 h-4 w-4 shrink-0 accent-[#E4C285]"
+                className="mt-1 h-4 w-4 shrink-0 accent-[#D62854]"
               />
               <span>
                 <span className="block text-sm text-mist">{option.label}</span>
@@ -164,7 +164,7 @@ export function RadioGroupField({ legend, name, value, options, error, onChange 
         })}
       </div>
       {error ? (
-        <p className="flex items-center gap-1.5 text-xs text-rose-300">
+        <p className="flex items-center gap-1.5 text-xs text-rose-600">
           <AlertCircle aria-hidden="true" className="h-3.5 w-3.5" />
           {error}
         </p>
@@ -187,7 +187,7 @@ export function ToggleField({ label, description, checked, onChange }: TogglePro
         type="checkbox"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
-        className="mt-1 h-4 w-4 shrink-0 accent-[#E4C285]"
+        className="mt-1 h-4 w-4 shrink-0 accent-[#D62854]"
       />
       <span>
         <span className="block text-sm text-mist">{label}</span>

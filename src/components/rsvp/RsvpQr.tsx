@@ -40,8 +40,8 @@ export function RsvpQr({ url, celebrantName }: RsvpQrProps) {
           size={220}
           level="M"
           marginSize={1}
-          bgColor="#F6F1EA"
-          fgColor="#150F1E"
+          bgColor="#FFFFFF"
+          fgColor="#5B1631"
           aria-label="QR code linking to the RSVP form"
         />
       </div>

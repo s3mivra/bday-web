@@ -34,8 +34,8 @@ export default {
         prose: '62ch',
       },
       boxShadow: {
-        lift: '0 24px 60px -32px rgba(0, 0, 0, 0.85)',
-        frame: '0 0 0 1px rgba(228, 194, 133, 0.18), 0 30px 80px -40px rgba(0,0,0,0.9)',
+        lift: '0 24px 60px -32px rgba(179, 18, 63, 0.35)',
+        frame: '0 0 0 1px rgba(214, 40, 84, 0.18), 0 30px 80px -40px rgba(179, 18, 63, 0.35)',
       },
       keyframes: {
         rise: {

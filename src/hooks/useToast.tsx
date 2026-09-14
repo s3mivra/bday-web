@@ -18,7 +18,7 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 const TONE_STYLES: Record<ToastTone, { icon: typeof Info; className: string }> = {
   success: { icon: CheckCircle2, className: 'border-emerald-400/40 text-emerald-200' },
-  error: { icon: XCircle, className: 'border-rose-400/40 text-rose-200' },
+  error: { icon: XCircle, className: 'border-rose-400/40 text-rose-700' },
   info: { icon: Info, className: 'border-champagne/40 text-champagne' },
 };
 

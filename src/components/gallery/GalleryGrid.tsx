@@ -96,7 +96,7 @@ export function GalleryGrid() {
       </ul>
 
       {error ? (
-        <p role="alert" className="mt-6 text-sm text-rose-300">
+        <p role="alert" className="mt-6 text-sm text-rose-600">
           {error}
         </p>
       ) : null}

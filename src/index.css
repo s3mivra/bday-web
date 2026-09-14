@@ -3,20 +3,20 @@
 @tailwind utilities;
 
 @layer base {
-  /* Single design: the Starlight night-sky palette. */
+  /* Single design: the berry palette (pink, white and berry red). */
   :root {
-    color-scheme: dark;
-    --c-ink: 29 27 58;
-    --c-ink-soft: 45 42 90;
-    --c-ink-veil: 60 55 112;
-    --c-ink-line: 78 72 138;
-    --c-ink-contrast: 29 27 58;
-    --c-accent: 242 196 109;
-    --c-accent-deep: 214 166 80;
-    --c-accent-faint: 110 92 60;
-    --c-blush: 246 184 168;
-    --c-mist: 253 251 255;
-    --c-muted: 201 184 240;
+    color-scheme: light;
+    --c-ink: 255 245 248;
+    --c-ink-soft: 255 255 255;
+    --c-ink-veil: 255 228 236;
+    --c-ink-line: 245 194 211;
+    --c-ink-contrast: 255 255 255;
+    --c-accent: 214 40 84;
+    --c-accent-deep: 179 18 63;
+    --c-accent-faint: 255 214 226;
+    --c-blush: 255 158 184;
+    --c-mist: 91 22 49;
+    --c-muted: 158 84 112;
   }
 
   html {

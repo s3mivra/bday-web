@@ -1,5 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { Moon } from 'lucide-react';
+import { Cherry } from 'lucide-react';
 import { StarField } from '@/components/starlight/StarField';
 
 type Stage = 'idle' | 'opening' | 'flipped' | 'rising' | 'growing' | 'done';
@@ -31,13 +31,13 @@ function WaxSeal({ letter, className }: { letter: string; className: string }) {
     <svg className={className} viewBox="0 0 100 100" aria-hidden="true">
       <defs>
         <radialGradient id={gradientId} cx="35%" cy="30%" r="75%">
-          <stop offset="0" stopColor="#ffe6a8" />
-          <stop offset=".45" stopColor="#e9b654" />
-          <stop offset="1" stopColor="#a87a25" />
+          <stop offset="0" stopColor="#ff8aa5" />
+          <stop offset=".45" stopColor="#df2a52" />
+          <stop offset="1" stopColor="#8f0d2c" />
         </radialGradient>
       </defs>
       <path d={path} fill={`url(#${gradientId})`} />
-      <circle cx="50" cy="50" r="33" fill="none" stroke="#8a611a" strokeOpacity=".45" strokeWidth="2" />
+      <circle cx="50" cy="50" r="33" fill="none" stroke="#5e0620" strokeOpacity=".5" strokeWidth="2" />
       <circle cx="50" cy="50" r="29" fill="#000" fillOpacity=".06" />
       <text
         x="50"
@@ -46,7 +46,7 @@ function WaxSeal({ letter, className }: { letter: string; className: string }) {
         dominantBaseline="middle"
         fontFamily="Sacramento, cursive"
         fontSize="44"
-        fill="#7a5616"
+        fill="#ffe3ea"
       >
         {letter}
       </text>
@@ -76,7 +76,7 @@ export function Envelope({ celebrantName, occasion, heading, onOpenStart, onOpen
     const value = new URLSearchParams(window.location.search).get('to')?.trim() ?? '';
     return value.slice(0, 60);
   }, []);
-  const initial = celebrantName.trim().charAt(0).toUpperCase() || '✦';
+  const initial = celebrantName.trim().charAt(0).toUpperCase() || '♥︎';
 
   useEffect(() => {
     const { overflow } = document.body.style;
@@ -146,7 +146,7 @@ export function Envelope({ celebrantName, occasion, heading, onOpenStart, onOpen
             To<b>{guest || 'our dearest guest'}</b>
           </div>
           <div className="sl-stamp" aria-hidden="true">
-            <Moon className="h-6 w-6" />
+            <Cherry className="h-6 w-6" />
           </div>
           <button
             ref={sealRef}
@@ -166,7 +166,7 @@ export function Envelope({ celebrantName, occasion, heading, onOpenStart, onOpen
 
       {bursts.map((burst) => (
         <span key={burst.id} className="sl-burst" style={burst.style} aria-hidden="true">
-          {'✦'}
+          {'♥︎'}
         </span>
       ))}
     </div>
