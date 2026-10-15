@@ -203,7 +203,7 @@ export function StarlightInvitation({ event, hero, invitation }: StarlightInvita
   const ninang = lines(inv?.ninang);
   const reminders = lines(inv?.reminders);
   const blockColors = ['#e8315a', '#ff7aa0', '#b3123f', '#f25c84'];
-  const blocks = name.replace(/\s+/g, '').toUpperCase().slice(0, 6).split('');
+  const blocks = name.replace(/\s+/g, '').toUpperCase().slice(0, 8).split('');
   const shortDate = eventDate
     ? [eventDate.getMonth() + 1, eventDate.getDate(), eventDate.getFullYear() % 100]
         .map((part) => String(part).padStart(2, '0'))
